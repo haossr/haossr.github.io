@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-  <title>{{ site.name }}</title>
+  <title>{{ site.title }}</title>
 
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 
-  <meta name="author" content="{{ site.name }}" />
+  <meta name="author" content="{{ site.user.name }}" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="{{ site.favicon }}" type="image/vnd.microsoft.icon">
 
@@ -26,10 +26,10 @@
           <tr style="padding:0px">
             <td style="padding:2.5%;width:60%;vertical-align:middle">
               <h1>
-                  <name> {{ site.name }} </name>
+                  <name> {{ site.user.name }} </name>
               </h1>
               <p align="center">
-                  <email> haosheng at cs dot stanford dot edu </email>
+                  <email> {{ site.user.email.show }} </email>
               </p>
 
               <p>
@@ -42,7 +42,7 @@
                 I got my MS in Computational Engineering from <a href="http://icme.stanford.edu">ICME(Institute for Computational & Mathematical Engineering), Stanford University</a>, where I TAed <a href="http://cs229.stanford.edu/projects2016/">CS229 (2016 Fall)</a>, <a href="https://ee364.stanford.edu">EE364A (2017 Spring)</a> and <a href="https://edusalsa.com/course?c=OIT%20274">OIT274 (2019 Spring)</a>. I have a B.A. in PPE (Philosophy, Political Science and Economics) from <a href="http://english.pku.edu.cn/">Yuanpei College, Peking University</a>.
               </p>
               <p style="text-align:center">
-              <a target="_blank" href="{{ site.user.email }}"> Email</a> &nbsp;/&nbsp;
+              <a target="_blank" href="{{ site.user.email.send }}"> Email</a> &nbsp;/&nbsp;
               <a href="{{ site.user.github | prepend: 'https://github.com/' }}">GitHub</a> &nbsp;/&nbsp;
               <a href="{{ site.user.notebook }}">Notebook</a> &nbsp;/&nbsp;
                 <!--<a href="https://scholar.google.com/citations?user=GCYG4GoAAAAJ">Google Scholar</a> &nbsp;/&nbsp; -->
