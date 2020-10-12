@@ -46,7 +46,7 @@ footer-links:
 disqus:
 
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
-google_analytics:
+google_analytics: UA-180322865-1
 # excerpt_separator: <!--more-->
 
 # Your website URL (e.g. http://barryclark.github.io or http://www.barryclark.co)
