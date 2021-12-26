@@ -21,7 +21,7 @@ user:
       send: "https://mailhide.io/e/VTKjW"
   github: "haossr"
   linkedin: "haosheng"
-  notebook: "https://haossr.github.io/notes/" 
+  #notebook: "https://haossr.github.io/notes/" 
   photo: "assets/image/profile-circle-cropped.png"
 
 # Includes an icon in the footer for each username you enter
