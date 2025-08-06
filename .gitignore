@@ -1,3 +1,6 @@
 
 # Auto generate website
 _site/
+# Bundler artifacts
+vendor/
+.bundle/
