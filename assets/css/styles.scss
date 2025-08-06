@@ -9,6 +9,22 @@
 //@import "variables";
 // Syntax highlighting @import is at the bottom of this file
 
+/* Responsive typography and layout */
+@media (max-width: 600px) {
+  body, td, th, tr, p, a { font-size: 16px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 16px; }
+  table { width: 100% !important; }
+}
+
+/* Image defaults and lazy loading hints */
+img { height: auto; }
+img[loading="lazy"] {
+  content-visibility: auto;
+  contain-intrinsic-size: 200px;
+}
+
 /**************/
 /* BASE RULES */
 /**************/
