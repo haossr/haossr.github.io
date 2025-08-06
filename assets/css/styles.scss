@@ -21,6 +21,8 @@
   td { padding: 12px !important; }
 }
 
+@media (max-width: 600px) { body { padding: 0 12px; } }
+
 /* Image defaults and lazy loading hints */
 img { max-width: 100%; height: auto; }
 img[loading="lazy"] {
@@ -42,7 +44,7 @@ a {
 }
 
 /* Readability */
-body, p { line-height: 1.6; }
+body, p { line-height: 1.6; overflow-x: hidden; }
 
 a:focus,
 a:hover {
