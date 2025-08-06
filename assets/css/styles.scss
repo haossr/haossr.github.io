@@ -15,11 +15,14 @@
   h1 { font-size: 28px; }
   h2 { font-size: 20px; }
   h3 { font-size: 16px; }
+  name { font-size: 32px; }
   table { width: 100% !important; }
+  table, tr, td { display: block; width: 100% !important; }
+  td { padding: 12px !important; }
 }
 
 /* Image defaults and lazy loading hints */
-img { height: auto; }
+img { max-width: 100%; height: auto; }
 img[loading="lazy"] {
   content-visibility: auto;
   contain-intrinsic-size: 200px;
@@ -32,6 +35,9 @@ a {
   color: #07889b;
   text-decoration: none;
 }
+
+/* Readability */
+body, p { line-height: 1.6; }
 
 a:focus,
 a:hover {
