@@ -114,6 +114,196 @@ email {
     font-size: 15px;
 }
 
+.lucky-wrapper {
+  text-align: center;
+  margin: 18px 0 6px;
+}
+
+.lucky-button {
+  display: inline-block;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  color: #07889b;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  background: #fff;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.1s ease;
+}
+
+.lucky-button:hover,
+.lucky-button:focus {
+  background: #07889b;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.lucky-button:active {
+  transform: translateY(0);
+}
+
+.reading-body {
+  background: #f8f9fb;
+  min-height: 100vh;
+}
+
+.reading-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.reading-card {
+  width: 100%;
+  max-width: 760px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  padding: 28px;
+}
+
+.reading-top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.reading-heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  text-align: left;
+}
+
+.reading-subtitle {
+  margin: 0;
+  color: #4b5563;
+}
+
+.reading-main {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.reading-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.reading-cover {
+  width: 140px;
+  max-width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  background: #f9fafb;
+  object-fit: cover;
+  align-self: flex-start;
+}
+
+.reading-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reading-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.reading-quote {
+  font-size: 22px;
+  line-height: 1.8;
+  color: #0f172a;
+  white-space: pre-line;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.reading-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.reading-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.reading-title-link:hover {
+  color: #07889b;
+}
+
+.reading-author {
+  color: #374151;
+  font-size: 14px;
+}
+
+.reading-cover-link {
+  display: inline-block;
+}
+
+.reading-link {
+  color: #07889b;
+  font-weight: 700;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+.reading-link:hover {
+  color: #f09228;
+}
+
+.reading-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.reading-back {
+  color: #6b7280;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.reading-back:hover {
+  color: #07889b;
+}
+
+.reading-loading {
+  margin: 0;
+  color: #6b7280;
+}
+
+@media (max-width: 640px) {
+  .reading-main {
+    flex-direction: column;
+  }
+
+  .reading-cover {
+    width: 160px;
+  }
+}
+
 
 // Settled on moving the import of syntax highlighting to the bottom of the CSS
 // ... Otherwise it really bloats up the top of the CSS file and makes it difficult to find the start

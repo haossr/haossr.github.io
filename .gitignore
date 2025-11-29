@@ -1,3 +1,6 @@
 
 # Auto generate website
 _site/
+.DS_Store
+.bundle
+vendor/

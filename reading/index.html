@@ -1,0 +1,271 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-R7BNJ90QEW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-R7BNJ90QEW');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reading | {{ site.title }}</title>
+  <link rel="shortcut icon" href="{{ site.favicon }}" type="image/vnd.microsoft.icon">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+</head>
+
+<body class="reading-body">
+  <div class="reading-page">
+    <div class="reading-card">
+      <div class="reading-top">
+        <a class="reading-back" href="/">&larr; Back home</a>
+      </div>
+      <div id="reading-content" class="reading-content">
+        <p class="reading-loading">Loading a random excerpt...</p>
+      </div>
+      <div class="reading-actions"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const contentEl = document.getElementById('reading-content');
+      const shuffleBtn = document.getElementById('shuffle-reading');
+      const setShuffleDisabled = (disabled) => {
+        if (shuffleBtn) shuffleBtn.disabled = disabled;
+      };
+      let readings = [];
+      let history = [];
+      let historyPos = -1;
+
+      const setStatus = (message) => {
+        contentEl.innerHTML = '';
+        const p = document.createElement('p');
+        p.className = 'reading-loading';
+        p.textContent = message;
+        contentEl.appendChild(p);
+      };
+
+      const sanitizeJson = (text) => {
+        // reading.json occasionally includes raw control characters inside strings; escape them before parsing.
+        let safe = '';
+        let inString = false;
+        let escape = false;
+        for (const ch of text) {
+          if (inString) {
+            if (escape) {
+              escape = false;
+              safe += ch;
+              continue;
+            }
+            if (ch === '\\') {
+              escape = true;
+              safe += ch;
+              continue;
+            }
+            if (ch === '"') {
+              inString = false;
+              safe += ch;
+              continue;
+            }
+            if (ch === '\n') {
+              safe += '\\n';
+              continue;
+            }
+            if (ch === '\r') {
+              safe += '\\r';
+              continue;
+            }
+            if (ch === '\t') {
+              safe += '\\t';
+              continue;
+            }
+            safe += ch;
+          } else {
+            if (ch === '"') {
+              inString = true;
+            }
+            safe += ch;
+          }
+        }
+        return safe;
+      };
+
+      const formatDate = (timestamp) => {
+        if (!timestamp) return 'Date unknown';
+        const date = new Date(Number(timestamp) * 1000);
+        if (Number.isNaN(date.getTime())) return 'Date unknown';
+        return date.toISOString().split('T')[0];
+      };
+
+      const renderReading = (reading) => {
+        const {
+          markText,
+          title,
+          author,
+          isbn,
+          createdAt,
+          finishTime,
+          startTime,
+          coverUrl,
+          cover,
+          chapterTitle
+        } = reading;
+
+        contentEl.innerHTML = '';
+
+        const mainEl = document.createElement('div');
+        mainEl.className = 'reading-main';
+
+        const goodreadsHref = isbn ? `https://www.goodreads.com/book/isbn/${isbn}` : null;
+        const coverSrc = coverUrl || cover;
+        if (coverSrc) {
+          const coverEl = document.createElement('img');
+          coverEl.className = 'reading-cover';
+          coverEl.src = coverSrc;
+          coverEl.alt = title ? `${title} cover` : 'Book cover';
+          coverEl.loading = 'lazy';
+          coverEl.decoding = 'async';
+          coverEl.addEventListener('error', () => {
+            coverEl.style.display = 'none';
+          });
+          if (goodreadsHref) {
+            const coverLink = document.createElement('a');
+            coverLink.className = 'reading-cover-link';
+            coverLink.href = goodreadsHref;
+            coverLink.target = '_blank';
+            coverLink.rel = 'noopener noreferrer';
+            coverLink.appendChild(coverEl);
+            mainEl.appendChild(coverLink);
+          } else {
+            mainEl.appendChild(coverEl);
+          }
+        }
+
+        const detailsEl = document.createElement('div');
+        detailsEl.className = 'reading-details';
+
+        const quoteEl = document.createElement('div');
+        quoteEl.className = 'reading-quote';
+        quoteEl.textContent = markText && markText.trim() ? markText.trim() : 'No quote available.';
+        detailsEl.appendChild(quoteEl);
+
+        const formattedDate = formatDate(createdAt || finishTime || startTime);
+        const datePart = formattedDate === 'Date unknown' ? '' : formattedDate;
+
+        const metaWrapper = document.createElement('div');
+        metaWrapper.className = 'reading-meta';
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'reading-title';
+        const displayTitle = [title, chapterTitle, datePart].filter(Boolean).join(' · ') || 'Untitled';
+        if (goodreadsHref) {
+          const titleLink = document.createElement('a');
+          titleLink.className = 'reading-title-link';
+          titleLink.href = goodreadsHref;
+          titleLink.target = '_blank';
+          titleLink.rel = 'noopener noreferrer';
+          titleLink.textContent = displayTitle;
+          titleEl.appendChild(titleLink);
+        } else {
+          titleEl.textContent = displayTitle;
+        }
+
+        const authorEl = document.createElement('div');
+        authorEl.className = 'reading-author';
+        authorEl.textContent = author ? `by ${author}` : '';
+
+        metaWrapper.appendChild(titleEl);
+        metaWrapper.appendChild(authorEl);
+
+        detailsEl.appendChild(metaWrapper);
+
+        mainEl.appendChild(detailsEl);
+        contentEl.appendChild(mainEl);
+      };
+
+      const renderFromHistory = () => {
+        const idx = history[historyPos];
+        const choice = readings[idx];
+        if (!choice) return;
+        renderReading(choice);
+        setShuffleDisabled(false);
+      };
+
+      const pushToHistory = (idx) => {
+        history = history.slice(0, historyPos + 1);
+        history.push(idx);
+        historyPos = history.length - 1;
+        renderFromHistory();
+      };
+
+      const pickRandom = () => {
+        if (!readings.length) {
+          setStatus('No excerpts available yet.');
+          setShuffleDisabled(true);
+          return;
+        }
+        const choiceIdx = Math.floor(Math.random() * readings.length);
+        pushToHistory(choiceIdx);
+      };
+
+      const goBack = () => {
+        if (historyPos > 0) {
+          historyPos -= 1;
+          renderFromHistory();
+        }
+      };
+
+      const goForward = () => {
+        if (historyPos < history.length - 1) {
+          historyPos += 1;
+          renderFromHistory();
+        } else {
+          pickRandom();
+        }
+      };
+
+      if (shuffleBtn) {
+        shuffleBtn.addEventListener('click', () => {
+          pickRandom();
+        });
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          goBack();
+        } else if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          goForward();
+        }
+      });
+
+      fetch('/assets/json/reading.json')
+        .then((response) => response.text())
+        .then((raw) => {
+          const cleaned = sanitizeJson(raw);
+          const parsed = JSON.parse(cleaned);
+          readings = parsed.filter(
+            (item) => item && item.markText && item.markText.trim().length > 0
+          );
+          pickRandom();
+        })
+        .catch((error) => {
+          console.error(error);
+          setStatus('Unable to load excerpts right now.');
+          setShuffleDisabled(true);
+        });
+    });
+  </script>
+</body>
+
+</html>
