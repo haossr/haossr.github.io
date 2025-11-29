@@ -255,7 +255,11 @@ layout: null
           const cleaned = sanitizeJson(raw);
           const parsed = JSON.parse(cleaned);
           readings = parsed.filter(
-            (item) => item && item.markText && item.markText.trim().length > 0
+            (item) =>
+              item &&
+              item.markText &&
+              item.markText.trim().length > 0 &&
+              !item.markText.includes('封面')
           );
           pickRandom();
         })
