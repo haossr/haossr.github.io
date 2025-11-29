@@ -5,10 +5,11 @@
 # Name of your site (displayed in the header)
 title: "Hao Sheng 盛浩"
 # Short bio or description (displayed in the header)
-# description: the profile of an engineer, researcher and software developer
+description: Research scientist at OpenAI; previously Apple, TikTok, Landing AI; Ph.D. Stanford.
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
 favicon: "assets/image/favicon.ico"
+logo: "/assets/image/profile-circle-cropped.png"
 
 #
 # Flags below are optional
@@ -25,6 +26,8 @@ user:
   photo: "assets/image/profile-circle-cropped.png"
   amazon: "B0DNX6DFKR"
   scholar: "RODqCAsAAAAJ"
+  # cv: "/assets/cv.pdf"
+  # publications: "/publications/"
 
 # Includes an icon in the footer for each username you enter
 footer-links:
@@ -88,8 +91,8 @@ sass:
 
 # Use the following plug-ins
 plugins:
-      - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem
-    #  - jekyll-feed # Create an Atom feed using the official Jekyll feed gem
+  - jekyll-sitemap
+  - jekyll-seo-tag
 
 # Exclude these files from your production _site
 exclude:
@@ -103,3 +106,4 @@ exclude:
   - vendor
   - _temp/index.html
   - _temp/
+  - vendor/
