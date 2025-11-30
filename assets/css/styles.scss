@@ -196,8 +196,10 @@ email {
 
 .reading-top {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 16px;
 }
 
@@ -308,10 +310,68 @@ email {
   margin-top: 18px;
 }
 
+.reading-actions.top-right {
+  margin-top: 0;
+}
+
+.share-button {
+  border: none;
+  background: transparent;
+  color: #07889b;
+  padding: 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-button:hover:not(:disabled) {
+  background: rgba(7, 136, 155, 0.08);
+  transform: translateY(-1px);
+}
+
+.share-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.share-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.share-icon {
+  width: 18px;
+  height: 18px;
+}
+
 .reading-back {
   color: #6b7280;
   font-size: 14px;
   text-decoration: none;
+}
+
+.share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translate(-50%, 8px);
+  background: #111827;
+  color: #f9fafb;
+  padding: 10px 16px;
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.share-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .reading-back:hover {

@@ -27,26 +27,43 @@ layout: null
     <div class="reading-card">
       <div class="reading-top">
         <a class="reading-back" href="/">&larr; Back home</a>
+        <div class="reading-actions top-right">
+          <button id="share-reading" class="share-button" type="button" disabled aria-label="Share this excerpt">
+            <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.03 3.03 0 0 0 0-1.39l7.05-4.11A3 3 0 1 0 15 5a3.01 3.01 0 0 0 .09.7L8.04 9.81a3 3 0 1 0 0 4.38l7.05 4.11a3 3 0 1 0 2.91-2.22z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
       </div>
       <div id="reading-content" class="reading-content">
         <p class="reading-loading">Loading a random excerpt...</p>
       </div>
-      <div class="reading-actions"></div>
     </div>
   </div>
+  <div id="share-toast" class="share-toast" role="status" aria-live="polite"></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const contentEl = document.getElementById('reading-content');
-      const shuffleBtn = document.getElementById('shuffle-reading');
-      const setShuffleDisabled = (disabled) => {
-        if (shuffleBtn) shuffleBtn.disabled = disabled;
-      };
+      const shareBtn = document.getElementById('share-reading');
+      const shareToast = document.getElementById('share-toast');
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialId = urlParams.get('id');
+
+      let currentShareUrl = '';
+      let currentShareTitle = '';
       let readings = [];
       let history = [];
       let historyPos = -1;
+      let toastTimer = null;
+
+      const setShareDisabled = (disabled) => {
+        if (shareBtn) shareBtn.disabled = disabled;
+      };
+      setShareDisabled(true);
 
       const setStatus = (message) => {
+        setShareDisabled(true);
         contentEl.innerHTML = '';
         const p = document.createElement('p');
         p.className = 'reading-loading';
@@ -104,6 +121,140 @@ layout: null
         const date = new Date(Number(timestamp) * 1000);
         if (Number.isNaN(date.getTime())) return 'Date unknown';
         return date.toISOString().split('T')[0];
+      };
+
+      const computeId = (item, idx) => {
+        const parts = [item.bookId, item.range, item.createdAt, item.isbn, item.title]
+          .filter(Boolean)
+          .join('|');
+        const source = parts || `idx-${idx}`;
+        let hash = 0;
+        for (let i = 0; i < source.length; i += 1) {
+          hash = (hash << 5) - hash + source.charCodeAt(i);
+          hash |= 0;
+        }
+        return `r${Math.abs(hash)}`;
+      };
+
+      const buildShareUrl = (id) => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('id', id);
+        return url.toString();
+      };
+
+      const updateShareData = (reading) => {
+        if (!reading) {
+          setShareDisabled(true);
+          return;
+        }
+        const id = reading.__id || computeId(reading, Math.max(historyPos, 0));
+        currentShareUrl = buildShareUrl(id);
+        currentShareTitle = reading.title || 'Reading note';
+        setShareDisabled(false);
+        if (shareBtn) {
+          shareBtn.dataset.shareUrl = currentShareUrl;
+        }
+        if (window.history && window.history.replaceState) {
+          const next = new URL(currentShareUrl);
+          window.history.replaceState(null, '', `${next.pathname}${next.search}`);
+        }
+      };
+
+      const flashShareMessage = (message) => {
+        if (!shareToast) return;
+        shareToast.textContent = message;
+        shareToast.classList.add('visible');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          shareToast.classList.remove('visible');
+        }, 1800);
+      };
+
+      const copyViaTextarea = (text) => {
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'absolute';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          const successful = document.execCommand && document.execCommand('copy');
+          document.body.removeChild(textarea);
+          return successful;
+        } catch (error) {
+          return false;
+        }
+      };
+
+      const shareCurrent = async () => {
+        if (!currentShareUrl) {
+          flashShareMessage('No link to share');
+          return;
+        }
+        const url = currentShareUrl;
+        const title = currentShareTitle || document.title;
+        const isMobile =
+          /iphone|ipad|ipod|android|mobile/i.test(navigator.userAgent || '') || false;
+        const canNativeShare =
+          isSecureContext &&
+          isMobile &&
+          navigator.share &&
+          (!navigator.canShare || navigator.canShare({ url }));
+        const tryClipboardApi = async () => {
+          if (navigator.clipboard?.writeText) {
+            try {
+              await navigator.clipboard.writeText(url);
+              flashShareMessage('Link copied');
+              return true;
+            } catch (error) {
+              // ignore and fall back
+            }
+          }
+          return false;
+        };
+
+        const tryLegacyCopy = () => {
+          const copied = copyViaTextarea(url);
+          if (copied) {
+            flashShareMessage('Link copied');
+          }
+          return copied;
+        };
+
+        if (canNativeShare) {
+          try {
+            await navigator.share({
+              url,
+              title,
+              text: 'Sharing a highlight',
+            });
+            flashShareMessage('Link shared');
+            return;
+          } catch (error) {
+            if (error?.name === 'AbortError') {
+              // fall back to copy
+            } else {
+              // fall through to clipboard/prompt
+            }
+          }
+        }
+
+        try {
+          const copied = await tryClipboardApi();
+          if (copied) return;
+        } catch (error) {
+          // continue to legacy/prompt
+        }
+
+        if (tryLegacyCopy()) return;
+
+        if (window.prompt) {
+          window.prompt('Copy this link', url);
+          flashShareMessage('Link ready');
+        } else {
+          flashShareMessage('Share failed');
+        }
       };
 
       const renderReading = (reading) => {
@@ -190,6 +341,7 @@ layout: null
 
         mainEl.appendChild(detailsEl);
         contentEl.appendChild(mainEl);
+        updateShareData(reading);
       };
 
       const renderFromHistory = () => {
@@ -197,7 +349,6 @@ layout: null
         const choice = readings[idx];
         if (!choice) return;
         renderReading(choice);
-        setShuffleDisabled(false);
       };
 
       const pushToHistory = (idx) => {
@@ -210,7 +361,6 @@ layout: null
       const pickRandom = () => {
         if (!readings.length) {
           setStatus('No excerpts available yet.');
-          setShuffleDisabled(true);
           return;
         }
         const choiceIdx = Math.floor(Math.random() * readings.length);
@@ -233,9 +383,9 @@ layout: null
         }
       };
 
-      if (shuffleBtn) {
-        shuffleBtn.addEventListener('click', () => {
-          pickRandom();
+      if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+          shareCurrent();
         });
       }
 
@@ -254,19 +404,37 @@ layout: null
         .then((raw) => {
           const cleaned = sanitizeJson(raw);
           const parsed = JSON.parse(cleaned);
-          readings = parsed.filter(
-            (item) =>
-              item &&
-              item.markText &&
-              item.markText.trim().length > 0 &&
-              !item.markText.includes('封面')
-          );
-          pickRandom();
+          readings = parsed
+            .filter(
+              (item) =>
+                item &&
+                item.markText &&
+                item.markText.trim().length > 0 &&
+                !item.markText.includes('封面')
+            )
+            .map((item, idx) => ({
+              ...item,
+              __id: computeId(item, idx)
+            }));
+
+          if (!readings.length) {
+            setStatus('No excerpts available yet.');
+            return;
+          }
+
+          const initialIdx = initialId
+            ? readings.findIndex((entry) => entry.__id === initialId)
+            : -1;
+
+          if (initialIdx >= 0) {
+            pushToHistory(initialIdx);
+          } else {
+            pickRandom();
+          }
         })
         .catch((error) => {
           console.error(error);
           setStatus('Unable to load excerpts right now.');
-          setShuffleDisabled(true);
         });
     });
   </script>
