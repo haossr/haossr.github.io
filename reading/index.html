@@ -28,6 +28,26 @@ layout: null
       <div class="reading-top">
         <a class="reading-back" href="/">&larr; Back home</a>
         <div class="reading-actions top-right">
+          <div id="lang-switcher" class="lang-switcher" aria-label="Switch language">
+            <button type="button" data-lang="zh" class="lang-button" aria-label="中文">中</button>
+            <div class="lang-dropdown">
+              <button
+                type="button"
+                id="lang-trigger"
+                class="lang-button lang-trigger"
+                aria-label="More languages"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                EN ▾
+              </button>
+              <div class="lang-menu" id="lang-menu" role="menu">
+                <button type="button" data-lang="en" class="lang-menu-item" role="menuitem">EN</button>
+                <button type="button" data-lang="es" class="lang-menu-item" role="menuitem">ES</button>
+                <button type="button" data-lang="fr" class="lang-menu-item" role="menuitem">FR</button>
+              </div>
+            </div>
+          </div>
           <button id="share-reading" class="share-button" type="button" disabled aria-label="Share this excerpt">
             <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.03 3.03 0 0 0 0-1.39l7.05-4.11A3 3 0 1 0 15 5a3.01 3.01 0 0 0 .09.7L8.04 9.81a3 3 0 1 0 0 4.38l7.05 4.11a3 3 0 1 0 2.91-2.22z" fill="currentColor"/>
@@ -47,15 +67,69 @@ layout: null
       const contentEl = document.getElementById('reading-content');
       const shareBtn = document.getElementById('share-reading');
       const shareToast = document.getElementById('share-toast');
+      const langSwitcher = document.getElementById('lang-switcher');
+      const mainLangButtons = Array.from(
+        langSwitcher?.querySelectorAll('.lang-button[data-lang]') || []
+      );
+      const dropdown = langSwitcher?.querySelector('.lang-dropdown');
+      const langMenu = langSwitcher?.querySelector('.lang-menu');
+      const langTrigger = document.getElementById('lang-trigger');
+      const langMenuItems = Array.from(
+        langSwitcher?.querySelectorAll('.lang-menu-item[data-lang]') || []
+      );
       const urlParams = new URLSearchParams(window.location.search);
       const initialId = urlParams.get('id');
+      const urlLang = (urlParams.get('lang') || '').toLowerCase();
 
+      const LANG_CONFIG = {
+        zh: { label: '中', file: '/assets/json/reading.json' },
+        en: { label: 'EN', file: '/assets/json/reading-en.json' },
+        es: { label: 'ES', file: '/assets/json/reading-es.json' },
+        fr: { label: 'FR', file: '/assets/json/reading-fr.json' }
+      };
+      const SUPPORTED_LANGS = Object.keys(LANG_CONFIG);
+
+      let currentLang = 'en';
       let currentShareUrl = '';
       let currentShareTitle = '';
       let readings = [];
       let history = [];
       let historyPos = -1;
       let toastTimer = null;
+      let baseIds = [];
+      let baseKeepIndices = [];
+      const languageCache = {};
+
+      const detectPreferredLang = () => {
+        if (SUPPORTED_LANGS.includes(urlLang)) return urlLang;
+        const navLang = (navigator.language || '').toLowerCase();
+        const match = SUPPORTED_LANGS.find((lang) => navLang.startsWith(lang));
+        return match || 'en';
+      };
+
+      const closeDropdown = () => {
+        if (dropdown) {
+          dropdown.classList.remove('is-open');
+        }
+        if (langTrigger) {
+          langTrigger.setAttribute('aria-expanded', 'false');
+        }
+      };
+
+      const setActiveLangButton = () => {
+        const allButtons = [...mainLangButtons, ...langMenuItems];
+        allButtons.forEach((btn) => {
+          const active = btn.dataset.lang === currentLang;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        if (langTrigger) {
+          const label = ['en', 'es', 'fr'].includes(currentLang) ? currentLang.toUpperCase() : 'EN';
+          langTrigger.textContent = `${label} ▾`;
+          langTrigger.classList.toggle('is-active', ['en', 'es', 'fr'].includes(currentLang));
+          langTrigger.setAttribute('aria-expanded', dropdown?.classList.contains('is-open') ? 'true' : 'false');
+        }
+      };
 
       const setShareDisabled = (disabled) => {
         if (shareBtn) shareBtn.disabled = disabled;
@@ -116,6 +190,84 @@ layout: null
         return safe;
       };
 
+      const debounce = (fn, wait = 150) => {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn(...args), wait);
+        };
+      };
+
+      const fitTitle = () => {
+        const titleEl = contentEl.querySelector('.reading-title');
+        if (!titleEl) return;
+        const prefersSingleLine = currentLang && currentLang !== 'zh';
+        const baseFont = parseFloat(window.getComputedStyle(titleEl).fontSize) || 16;
+        const minSingle = 10;
+        const minMulti = 12;
+        const width = titleEl.clientWidth || titleEl.scrollWidth;
+        if (!width) return;
+
+        const measure = (font, whiteSpace) => {
+          const clone = titleEl.cloneNode(true);
+          const style = clone.style;
+          style.position = 'absolute';
+          style.visibility = 'hidden';
+          style.zIndex = '-1';
+          style.whiteSpace = whiteSpace;
+          style.display = 'block';
+          style.overflow = 'visible';
+          style.maxWidth = `${width}px`;
+          style.width = `${width}px`;
+          style.fontSize = `${font}px`;
+          style.webkitLineClamp = 'unset';
+          style.webkitBoxOrient = 'unset';
+          document.body.appendChild(clone);
+          const computed = window.getComputedStyle(clone);
+          const lineHeight = parseFloat(computed.lineHeight) || font * 1.2;
+          const result = {
+            scrollWidth: clone.scrollWidth,
+            scrollHeight: clone.scrollHeight,
+            lineHeight
+          };
+          clone.remove();
+          return result;
+        };
+
+        let chosen = baseFont;
+        let singleLine = false;
+
+        if (prefersSingleLine) {
+          for (let font = baseFont; font >= minSingle; font -= 0.5) {
+            const { scrollWidth } = measure(font, 'nowrap');
+            if (scrollWidth <= width + 1) {
+              chosen = font;
+              singleLine = true;
+              break;
+            }
+          }
+        }
+
+        if (!singleLine) {
+          for (let font = baseFont; font >= minMulti; font -= 0.5) {
+            const { scrollHeight, lineHeight, scrollWidth } = measure(font, 'normal');
+            const lines = Math.ceil(scrollHeight / lineHeight);
+            const fitsWidth = scrollWidth <= width + 1;
+            if (lines <= 2 && fitsWidth) {
+              chosen = font;
+              break;
+            }
+          }
+        }
+
+        titleEl.style.setProperty('--title-size', `${Math.min(chosen, baseFont)}px`);
+        if (singleLine) {
+          titleEl.classList.add('single-line');
+        } else {
+          titleEl.classList.remove('single-line');
+        }
+      };
+
       const formatDate = (timestamp) => {
         if (!timestamp) return 'Date unknown';
         const date = new Date(Number(timestamp) * 1000);
@@ -139,6 +291,7 @@ layout: null
       const buildShareUrl = (id) => {
         const url = new URL(window.location.href);
         url.searchParams.set('id', id);
+        url.searchParams.set('lang', currentLang);
         return url.toString();
       };
 
@@ -342,6 +495,7 @@ layout: null
         mainEl.appendChild(detailsEl);
         contentEl.appendChild(mainEl);
         updateShareData(reading);
+        requestAnimationFrame(() => fitTitle());
       };
 
       const renderFromHistory = () => {
@@ -383,11 +537,142 @@ layout: null
         }
       };
 
-      if (shareBtn) {
-        shareBtn.addEventListener('click', () => {
-          shareCurrent();
+      const prepareReadings = (parsed, options = {}) => {
+        const { idsSource = null, pickIndices = null, recordIndices = false } = options;
+        const picks = pickIndices ? new Set(pickIndices) : null;
+        const filtered = [];
+        const keptIdx = [];
+
+        parsed.forEach((item, idx) => {
+          const keep = picks
+            ? picks.has(idx)
+            : item &&
+              item.markText &&
+              item.markText.trim().length > 0 &&
+              !item.markText.includes('封面');
+
+          if (!keep) return;
+          filtered.push({ ...item });
+          if (recordIndices) keptIdx.push(idx);
         });
-      }
+
+        const mapped = filtered.map((item, idx) => ({
+          ...item,
+          __id:
+            idsSource && idsSource[idx] ? idsSource[idx] : computeId(item, idx)
+        }));
+
+        return { items: mapped, keptIndices: keptIdx };
+      };
+
+      const fetchLanguageData = async (lang) => {
+        if (languageCache[lang]) return languageCache[lang];
+        const config = LANG_CONFIG[lang] || LANG_CONFIG.en;
+        const response = await fetch(config.file);
+        if (!response.ok) {
+          throw new Error(`Failed to load ${config.file}`);
+        }
+        const cleaned = sanitizeJson(await response.text());
+        const parsed = JSON.parse(cleaned);
+        const idsSource = lang === 'zh' ? null : baseIds.length ? baseIds : null;
+        const picks = lang === 'zh' ? null : baseKeepIndices;
+        if (lang !== 'zh' && (!baseKeepIndices || !baseKeepIndices.length)) {
+          throw new Error('Base language not loaded; cannot align entries.');
+        }
+        const { items, keptIndices } = prepareReadings(parsed, {
+          idsSource,
+          pickIndices: picks,
+          recordIndices: lang === 'zh'
+        });
+        if (lang === 'zh') {
+          baseKeepIndices = keptIndices;
+          if (!baseIds.length) {
+            baseIds = items.map((item) => item.__id);
+          }
+        }
+        languageCache[lang] = items;
+        return items;
+      };
+
+      const ensureBase = async () => {
+        if (!baseIds.length) {
+          await fetchLanguageData('zh');
+        }
+      };
+
+      const getCurrentId = () => {
+        if (historyPos < 0) return null;
+        const current = readings[history[historyPos]];
+        return current?.__id || null;
+      };
+
+      const switchLanguage = async (lang, options = {}) => {
+        const target = SUPPORTED_LANGS.includes(lang) ? lang : 'en';
+        const desiredId = options.initialId || (options.keepId ? getCurrentId() : null);
+        currentLang = target;
+        setActiveLangButton();
+        setStatus('Loading excerpts...');
+        try {
+          await ensureBase();
+          const langReadings = await fetchLanguageData(target);
+          readings = langReadings;
+          history = [];
+          historyPos = -1;
+
+          const initialIdx = desiredId
+            ? readings.findIndex((entry) => entry.__id === desiredId)
+            : -1;
+
+          if (initialIdx >= 0) {
+            pushToHistory(initialIdx);
+          } else {
+            pickRandom();
+          }
+        } catch (error) {
+          console.error(error);
+          setStatus('Unable to load excerpts right now.');
+        }
+      };
+
+        if (shareBtn) {
+          shareBtn.addEventListener('click', () => {
+            shareCurrent();
+          });
+        }
+
+        if (mainLangButtons.length) {
+          mainLangButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const lang = btn.dataset.lang;
+              closeDropdown();
+              switchLanguage(lang, { keepId: true });
+            });
+          });
+        }
+
+        if (langTrigger && dropdown && langMenu) {
+          langTrigger.addEventListener('click', () => {
+            const isOpen = dropdown.classList.toggle('is-open');
+            langTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          });
+          langMenuItems.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const lang = btn.dataset.lang;
+              closeDropdown();
+              switchLanguage(lang, { keepId: true });
+            });
+          });
+          document.addEventListener('click', (event) => {
+            if (!dropdown.contains(event.target)) {
+              closeDropdown();
+            }
+          });
+          document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              closeDropdown();
+            }
+          });
+        }
 
       document.addEventListener('keydown', (event) => {
         if (event.key === 'ArrowLeft') {
@@ -396,42 +681,31 @@ layout: null
         } else if (event.key === 'ArrowRight') {
           event.preventDefault();
           goForward();
+        } else if (event.key === 'c' || event.key === 'C') {
+          event.preventDefault();
+          switchLanguage('zh', { keepId: true });
+        } else if (event.key === 'e' || event.key === 'E') {
+          event.preventDefault();
+          switchLanguage('en', { keepId: true });
+        } else if (event.key === 'f' || event.key === 'F') {
+          event.preventDefault();
+          switchLanguage('fr', { keepId: true });
+        } else if (event.key === 's' || event.key === 'S') {
+          event.preventDefault();
+          switchLanguage('es', { keepId: true });
         }
       });
 
-      fetch('/assets/json/reading.json')
-        .then((response) => response.text())
-        .then((raw) => {
-          const cleaned = sanitizeJson(raw);
-          const parsed = JSON.parse(cleaned);
-          readings = parsed
-            .filter(
-              (item) =>
-                item &&
-                item.markText &&
-                item.markText.trim().length > 0 &&
-                !item.markText.includes('封面')
-            )
-            .map((item, idx) => ({
-              ...item,
-              __id: computeId(item, idx)
-            }));
+      const start = async () => {
+        setActiveLangButton();
+        await switchLanguage(detectPreferredLang(), { initialId });
+      };
 
-          if (!readings.length) {
-            setStatus('No excerpts available yet.');
-            return;
-          }
+      const handleResize = debounce(() => fitTitle(), 150);
+      window.addEventListener('resize', handleResize);
 
-          const initialIdx = initialId
-            ? readings.findIndex((entry) => entry.__id === initialId)
-            : -1;
-
-          if (initialIdx >= 0) {
-            pushToHistory(initialIdx);
-          } else {
-            pickRandom();
-          }
-        })
+      start()
+        .then(() => fitTitle())
         .catch((error) => {
           console.error(error);
           setStatus('Unable to load excerpts right now.');
