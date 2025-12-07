@@ -60,6 +60,14 @@ layout: null
       </div>
     </div>
   </div>
+  <div id="reading-timeline" class="reading-timeline" aria-hidden="true">
+    <div class="timeline-rail">
+      <div class="timeline-markers"></div>
+      <div class="timeline-year-grid"></div>
+      <div class="timeline-thumb"></div>
+    </div>
+    <div id="timeline-label" class="timeline-label">--</div>
+  </div>
   <div id="share-toast" class="share-toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -77,6 +85,12 @@ layout: null
       const langMenuItems = Array.from(
         langSwitcher?.querySelectorAll('.lang-menu-item[data-lang]') || []
       );
+      const timelineEl = document.getElementById('reading-timeline');
+      const timelineRail = timelineEl?.querySelector('.timeline-rail');
+      const timelineThumb = timelineEl?.querySelector('.timeline-thumb');
+      const timelineMarkers = timelineEl?.querySelector('.timeline-markers');
+      const timelineYearGrid = timelineEl?.querySelector('.timeline-year-grid');
+      const timelineLabel = document.getElementById('timeline-label');
       const urlParams = new URLSearchParams(window.location.search);
       const initialId = urlParams.get('id');
       const urlLang = (urlParams.get('lang') || '').toLowerCase();
@@ -99,6 +113,11 @@ layout: null
       let baseIds = [];
       let baseKeepIndices = [];
       const languageCache = {};
+      let timelineData = [];
+      let timelineMin = null;
+      let timelineMax = null;
+      let isDraggingTimeline = false;
+      let lastTimelineIdx = null;
 
       const detectPreferredLang = () => {
         if (SUPPORTED_LANGS.includes(urlLang)) return urlLang;
@@ -273,6 +292,11 @@ layout: null
         const date = new Date(Number(timestamp) * 1000);
         if (Number.isNaN(date.getTime())) return 'Date unknown';
         return date.toISOString().split('T')[0];
+      };
+
+      const getTimestampMs = (item) => {
+        const ts = Number(item.createdAt || item.finishTime || item.startTime || 0);
+        return Number.isFinite(ts) ? ts * 1000 : null;
       };
 
       const computeId = (item, idx) => {
@@ -495,6 +519,7 @@ layout: null
         mainEl.appendChild(detailsEl);
         contentEl.appendChild(mainEl);
         updateShareData(reading);
+        updateTimelineThumb();
         requestAnimationFrame(() => fitTitle());
       };
 
@@ -537,6 +562,26 @@ layout: null
         }
       };
 
+      const jumpToIndex = (idx) => {
+        if (idx == null || Number.isNaN(idx) || idx < 0 || idx >= readings.length) return;
+        history = history.slice(0, historyPos + 1);
+        history.push(idx);
+        historyPos = history.length - 1;
+        renderFromHistory();
+      };
+
+      const jumpChrono = (delta) => {
+        if (!timelineData.length) return;
+        const currentIdx = history[historyPos];
+        const currentEntry = getTimelineEntryByIdx(currentIdx) || timelineData[0];
+        const pos = timelineData.findIndex((entry) => entry.idx === currentEntry.idx);
+        if (pos === -1) return;
+        const target = timelineData[pos + delta];
+        if (target) {
+          jumpToIndex(target.idx);
+        }
+      };
+
       const prepareReadings = (parsed, options = {}) => {
         const { idsSource = null, pickIndices = null, recordIndices = false } = options;
         const picks = pickIndices ? new Set(pickIndices) : null;
@@ -565,6 +610,236 @@ layout: null
         return { items: mapped, keptIndices: keptIdx };
       };
 
+      const buildTimelineBase = (items) => {
+        const mapped = items
+          .map((item, idx) => ({ idx, ts: getTimestampMs(item) }))
+          .filter(({ ts }) => ts && Number.isFinite(ts))
+          .sort((a, b) => a.ts - b.ts);
+        if (!mapped.length) {
+          timelineData = [];
+          timelineMin = null;
+          timelineMax = null;
+          return;
+        }
+        timelineData = mapped;
+        timelineMin = mapped[0].ts;
+        timelineMax = mapped[mapped.length - 1].ts || timelineMin + 1;
+      };
+
+      const formatTimelineLabel = (ts) => {
+        if (!ts) return '--';
+        const d = new Date(ts);
+        const year = d.getUTCFullYear();
+        const month = `${d.getUTCMonth() + 1}`.padStart(2, '0');
+        return `${year} · ${month}`;
+      };
+
+      const getTimelineEntryByIdx = (idx) =>
+        timelineData.find((item) => item.idx === idx) || null;
+
+      const setTimelineVisibility = (visible) => {
+        if (!timelineEl) return;
+        timelineEl.classList.toggle('is-hidden', !visible);
+      };
+      setTimelineVisibility(false);
+
+      const renderYearGrid = () => {
+        if (!timelineYearGrid) return;
+        timelineYearGrid.innerHTML = '';
+        if (!timelineData.length || !timelineMin || !timelineMax) return;
+        const firstYear = new Date(timelineMin).getUTCFullYear();
+        const lastYear = new Date(timelineMax).getUTCFullYear();
+        const range = Math.max(1, timelineMax - timelineMin);
+        const frag = document.createDocumentFragment();
+        for (let year = firstYear; year <= lastYear; year += 1) {
+          const ts = Date.UTC(year, 0, 1);
+          const ratio = Math.max(0, Math.min(1, (ts - timelineMin) / range));
+          const line = document.createElement('div');
+          line.className = 'timeline-year-line';
+          line.style.top = `${ratio * 100}%`;
+          const label = document.createElement('div');
+          label.className = 'timeline-year-label';
+          label.textContent = year;
+          label.style.top = `${ratio * 100}%`;
+          line.appendChild(label);
+          frag.appendChild(line);
+        }
+        timelineYearGrid.appendChild(frag);
+      };
+
+      const renderTimelineMarkers = () => {
+        if (!timelineMarkers) return;
+        timelineMarkers.innerHTML = '';
+        if (!timelineData.length || !timelineMin || !timelineMax) return;
+        const range = Math.max(1, timelineMax - timelineMin);
+        const frag = document.createDocumentFragment();
+        timelineData.forEach((item) => {
+          const ratio = Math.max(0, Math.min(1, (item.ts - timelineMin) / range));
+          const dot = document.createElement('div');
+          dot.className = 'timeline-mark';
+          dot.style.top = `${ratio * 100}%`;
+          frag.appendChild(dot);
+        });
+        timelineMarkers.appendChild(frag);
+      };
+
+      const getRatioFromTs = (ts) => {
+        if (!timelineMin || !timelineMax) return 0;
+        const range = Math.max(1, timelineMax - timelineMin);
+        return Math.max(0, Math.min(1, (ts - timelineMin) / range));
+      };
+
+      const setThumbByEntry = (entry) => {
+        if (!entry || !timelineThumb || !timelineLabel) return;
+        const ratio = getRatioFromTs(entry.ts || timelineMin);
+        const percent = ratio * 100;
+        timelineThumb.style.top = `${percent}%`;
+        timelineLabel.style.top = `${percent}%`;
+        timelineLabel.textContent = formatTimelineLabel(entry.ts);
+      };
+
+      const updateTimelineThumb = () => {
+        if (
+          !timelineEl ||
+          !timelineRail ||
+          !timelineThumb ||
+          !timelineData.length ||
+          !timelineMin ||
+          !timelineMax
+        ) {
+          setTimelineVisibility(false);
+          return;
+        }
+        setTimelineVisibility(true);
+        const currentIdx = history[historyPos];
+        const entry =
+          getTimelineEntryByIdx(currentIdx) ||
+          timelineData[Math.max(0, Math.min(timelineData.length - 1, Math.floor(timelineData.length / 2)))];
+        setThumbByEntry(entry);
+      };
+
+      const findEntryByRatio = (ratio) => {
+        if (!timelineData.length || !timelineMin || !timelineMax) return null;
+        const clamped = Math.max(0, Math.min(1, ratio));
+        const targetTs = timelineMin + clamped * (timelineMax - timelineMin);
+        let closest = timelineData[0];
+        let bestDiff = Math.abs(closest.ts - targetTs);
+        for (let i = 1; i < timelineData.length; i += 1) {
+          const diff = Math.abs(timelineData[i].ts - targetTs);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            closest = timelineData[i];
+          }
+        }
+        return closest;
+      };
+
+      const findIndexByRatio = (ratio) => {
+        if (!timelineData.length || !timelineMin || !timelineMax) return null;
+        const clamped = Math.max(0, Math.min(1, ratio));
+        const targetTs = timelineMin + clamped * (timelineMax - timelineMin);
+        let closest = timelineData[0];
+        let bestDiff = Math.abs(closest.ts - targetTs);
+        for (let i = 1; i < timelineData.length; i += 1) {
+          const diff = Math.abs(timelineData[i].ts - targetTs);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            closest = timelineData[i];
+          }
+        }
+        return closest?.idx ?? null;
+      };
+
+      const handleTimelinePosition = (clientY) => {
+        if (!timelineRail) return null;
+        const rect = timelineRail.getBoundingClientRect();
+        if (!rect.height) return null;
+        const ratio = (clientY - rect.top) / rect.height;
+        return Math.max(0, Math.min(1, ratio));
+      };
+
+      const activateTimeline = () => {
+        if (timelineEl) timelineEl.classList.add('is-active');
+      };
+
+      const deactivateTimeline = () => {
+        if (timelineEl && !isDraggingTimeline) {
+          timelineEl.classList.remove('is-active');
+        }
+      };
+
+      const attachTimelineControls = () => {
+        if (!timelineEl || !timelineRail || !timelineThumb) return;
+
+        const applyPosition = (clientY) => {
+          const ratio = handleTimelinePosition(clientY);
+          if (ratio == null) return;
+          const entry = findEntryByRatio(ratio);
+          if (!entry) return;
+          setThumbByEntry(entry);
+          if (entry.idx !== lastTimelineIdx) {
+            lastTimelineIdx = entry.idx;
+            jumpToIndex(entry.idx);
+          }
+        };
+
+        const endDrag = () => {
+          isDraggingTimeline = false;
+          lastTimelineIdx = null;
+          timelineEl.classList.remove('is-dragging');
+          deactivateTimeline();
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('touchmove', onMove, { passive: false });
+          document.removeEventListener('mouseup', endDrag);
+          document.removeEventListener('touchend', endDrag);
+          document.removeEventListener('touchcancel', endDrag);
+        };
+
+        const onMove = (event) => {
+          if (!isDraggingTimeline) return;
+          const clientY =
+            event.touches && event.touches.length ? event.touches[0].clientY : event.clientY;
+          applyPosition(clientY);
+          event.preventDefault();
+        };
+
+        const startDrag = (event) => {
+          if (!timelineData.length) return;
+          isDraggingTimeline = true;
+          activateTimeline();
+          timelineEl.classList.add('is-dragging');
+          const clientY =
+            event.touches && event.touches.length ? event.touches[0].clientY : event.clientY;
+          applyPosition(clientY);
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('touchmove', onMove, { passive: false });
+          document.addEventListener('mouseup', endDrag);
+          document.addEventListener('touchend', endDrag);
+          document.addEventListener('touchcancel', endDrag);
+        };
+
+        timelineRail.addEventListener('mousedown', (event) => {
+          event.preventDefault();
+          startDrag(event);
+        });
+        timelineRail.addEventListener('touchstart', (event) => {
+          startDrag(event);
+        });
+        timelineThumb.addEventListener('mousedown', (event) => {
+          event.preventDefault();
+          startDrag(event);
+        });
+        timelineThumb.addEventListener('touchstart', (event) => {
+          startDrag(event);
+        });
+
+        timelineEl.addEventListener('mouseenter', () => {
+          if (!isDraggingTimeline) activateTimeline();
+        });
+        timelineEl.addEventListener('mouseleave', () => {
+          deactivateTimeline();
+        });
+      };
       const fetchLanguageData = async (lang) => {
         if (languageCache[lang]) return languageCache[lang];
         const config = LANG_CONFIG[lang] || LANG_CONFIG.en;
@@ -589,6 +864,9 @@ layout: null
           if (!baseIds.length) {
             baseIds = items.map((item) => item.__id);
           }
+          buildTimelineBase(items);
+          renderTimelineMarkers();
+          renderYearGrid();
         }
         languageCache[lang] = items;
         return items;
@@ -681,6 +959,12 @@ layout: null
         } else if (event.key === 'ArrowRight') {
           event.preventDefault();
           goForward();
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          jumpChrono(-1);
+        } else if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          jumpChrono(1);
         } else if (event.key === 'c' || event.key === 'C') {
           event.preventDefault();
           switchLanguage('zh', { keepId: true });
@@ -699,11 +983,14 @@ layout: null
       const start = async () => {
         setActiveLangButton();
         await switchLanguage(detectPreferredLang(), { initialId });
+        renderTimelineMarkers();
+        renderYearGrid();
       };
 
       const handleResize = debounce(() => fitTitle(), 150);
       window.addEventListener('resize', handleResize);
 
+      attachTimelineControls();
       start()
         .then(() => fitTitle())
         .catch((error) => {
