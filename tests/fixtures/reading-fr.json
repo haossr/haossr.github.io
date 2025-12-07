@@ -1,0 +1,29 @@
+[
+  {
+    "__id": "r1",
+    "bookId": "1",
+    "range": "1",
+    "createdAt": 1700000000,
+    "markText": "citation fr 1",
+    "title": "Livre fr 1",
+    "author": "Auteur 1"
+  },
+  {
+    "__id": "r2",
+    "bookId": "2",
+    "range": "1",
+    "createdAt": 1700000100,
+    "markText": "citation fr 2",
+    "title": "Livre fr 2",
+    "author": "Auteur 2"
+  },
+  {
+    "__id": "r3",
+    "bookId": "3",
+    "range": "1",
+    "createdAt": 1700000200,
+    "markText": "citation fr 3",
+    "title": "Livre fr 3",
+    "author": "Auteur 3"
+  }
+]
