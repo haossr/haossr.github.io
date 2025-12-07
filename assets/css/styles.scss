@@ -144,7 +144,7 @@ email {
 }
 
 .lucky-wrapper {
-  text-align: center;
+  text-align: right;
   margin: 18px 0 6px;
 }
 
@@ -621,7 +621,84 @@ email {
   }
 
   .reading-cover {
-    width: 160px;
+    width: 120px;
+    margin-bottom: 6px;
+  }
+
+  .reading-timeline {
+    right: 6px;
+    top: 60px;
+    bottom: 60px;
+    opacity: 0.25;
+  }
+
+  .timeline-label {
+    right: 18px;
+  }
+
+  .reading-card {
+    padding-right: 28px;
+  }
+
+  .reading-quote {
+    font-size: 18px;
+  }
+
+  .reading-title {
+    --title-size: 15px;
+  }
+
+  .reading-author {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  body:not(.reading-body) > table {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body:not(.reading-body) table {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body:not(.reading-body) table tr,
+  body:not(.reading-body) table td {
+    display: block;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 8px 0 !important;
+  }
+
+  body:not(.reading-body) h1 {
+    font-size: 26px;
+    margin: 6px 0;
+  }
+
+  body:not(.reading-body) name {
+    display: block;
+    font-size: 26px;
+  }
+
+  body:not(.reading-body) email {
+    display: block;
+    font-size: 13px;
+  }
+
+  body:not(.reading-body) p {
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 8px 0;
+    text-align: left;
+  }
+
+  .profile-photo {
+    width: 140px;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto;
   }
 }
 

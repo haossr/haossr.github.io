@@ -647,6 +647,8 @@ layout: null
         if (!timelineYearGrid) return;
         timelineYearGrid.innerHTML = '';
         if (!timelineData.length || !timelineMin || !timelineMax) return;
+        const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+        if (isMobile) return;
         const firstYear = new Date(timelineMin).getUTCFullYear();
         const lastYear = new Date(timelineMax).getUTCFullYear();
         const range = Math.max(1, timelineMax - timelineMin);
@@ -987,7 +989,10 @@ layout: null
         renderYearGrid();
       };
 
-      const handleResize = debounce(() => fitTitle(), 150);
+      const handleResize = debounce(() => {
+        fitTitle();
+        renderYearGrid();
+      }, 150);
       window.addEventListener('resize', handleResize);
 
       attachTimelineControls();
