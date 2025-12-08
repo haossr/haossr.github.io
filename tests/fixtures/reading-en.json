@@ -1,0 +1,29 @@
+[
+  {
+    "__id": "r1",
+    "bookId": "1",
+    "range": "1",
+    "createdAt": 1700000000,
+    "markText": "quote en 1",
+    "title": "Book en 1",
+    "author": "Author 1"
+  },
+  {
+    "__id": "r2",
+    "bookId": "2",
+    "range": "1",
+    "createdAt": 1700000100,
+    "markText": "quote en 2",
+    "title": "Book en 2",
+    "author": "Author 2"
+  },
+  {
+    "__id": "r3",
+    "bookId": "3",
+    "range": "1",
+    "createdAt": 1700000200,
+    "markText": "quote en 3",
+    "title": "Book en 3",
+    "author": "Author 3"
+  }
+]

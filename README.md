@@ -13,3 +13,24 @@ The website design is just a modification of [Jon Barron's website](https://jonb
 * I use thumbnails, so I can upload arbitrary sized images but then only display small ones. The `_make_thumbnails.sh` script generates them and the html template looks in `tn/` for all images. 
 * I have three categories of post with slightly differerent formatting, so changing sizing requires edits in multiple paces. 
 * If you use this, I'd appreciate a link back either to this repo or my personal website so others can find this too. 
+
+## Tests
+
+Playwright end-to-end tests cover the reading page behaviors (language switching, timeline, keyboard shortcuts) and the mobile homepage layout checks.
+
+### Test setup
+
+1. Install Ruby deps (for the site server): `bundle install`
+2. Install JS deps: `npm install`
+3. Download Playwright browsers (needed once): `npx playwright install chromium chromium-headless-shell`
+
+### Run
+
+1. Start the site in one terminal (port 4000, no baseurl):  
+   `bundle exec jekyll serve --port 4000 --livereload --baseurl ''`
+2. In another terminal, run the Playwright suite against that server:  
+   `BASE_URL=http://localhost:4000 npm test`
+
+You can run headed or UI mode with `npm run test:headed` or `npm run test:ui`.
+
+CI: GitHub Actions (`.github/workflows/ci.yml`) builds the site, serves `_site` on port 4000, installs Playwright browsers, and runs the Playwright suite on every push/PR.

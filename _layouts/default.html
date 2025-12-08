@@ -31,9 +31,9 @@
   <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
     <tr style="padding:0px">
       <td style="padding:0px">
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+        <table class="intro-table" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
           <tr style="padding:0px">
-            <td style="padding:2.5%;width:60%;vertical-align:middle;text-align:center;">
+            <td class="intro-bio" style="padding:2.5%;width:60%;vertical-align:middle;text-align:center;">
               <!-- Name and Email --> 
               <div align="center">
               <h1>
@@ -43,7 +43,9 @@
               </div>
 
               <!-- Short bio -->
-                {% include bio.html %} 
+              <div id="bio">
+                {% include bio.html %}
+              </div>
               
               <!-- MISC --> 
               <p style="text-align:center">
@@ -52,7 +54,7 @@
 
             </td>
 
-            <td style="padding:2.5%;width:40%;max-width:40%;text-align:center;">
+            <td class="intro-photo" style="padding:2.5%;width:40%;max-width:40%;text-align:center;">
                 {% include photo.html %}
             </td>
           </tr>

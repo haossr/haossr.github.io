@@ -1,0 +1,30 @@
+[
+  {
+    "__id": "r1",
+    "bookId": "1",
+    "range": "1",
+    "createdAt": 1700000000,
+    "markText": "摘录 zh 1",
+    "title": "书 zh 1",
+    "author": "作者",
+    "coverUrl": "https://example.com/cover1.jpg"
+  },
+  {
+    "__id": "r2",
+    "bookId": "2",
+    "range": "1",
+    "createdAt": 1700000100,
+    "markText": "摘录 zh 2",
+    "title": "书 zh 2",
+    "author": "作者2"
+  },
+  {
+    "__id": "r3",
+    "bookId": "3",
+    "range": "1",
+    "createdAt": 1700000200,
+    "markText": "摘录 zh 3",
+    "title": "书 zh 3",
+    "author": "作者3"
+  }
+]

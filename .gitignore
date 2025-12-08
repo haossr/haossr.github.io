@@ -4,3 +4,8 @@ _site/
 .DS_Store
 .bundle
 vendor/
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

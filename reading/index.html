@@ -601,11 +601,13 @@ layout: null
           if (recordIndices) keptIdx.push(idx);
         });
 
-        const mapped = filtered.map((item, idx) => ({
-          ...item,
-          __id:
-            idsSource && idsSource[idx] ? idsSource[idx] : computeId(item, idx)
-        }));
+        const mapped = filtered.map((item, idx) => {
+          const mappedId = item.__id || (idsSource && idsSource[idx]) || computeId(item, idx);
+          return {
+            ...item,
+            __id: mappedId
+          };
+        });
 
         return { items: mapped, keptIndices: keptIdx };
       };
