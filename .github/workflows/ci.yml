@@ -16,7 +16,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: Set up Node
@@ -36,11 +36,20 @@ jobs:
 
       - name: Start static server
         run: |
-          python3 -m http.server 4000 --directory _site &
+          python3 -m http.server 4000 --bind 0.0.0.0 --directory _site > /tmp/http.log 2>&1 &
           echo $! > .server_pid
 
       - name: Wait for server
-        run: timeout 60 bash -c 'until curl -sf http://127.0.0.1:4000 >/dev/null; do sleep 1; done'
+        run: |
+          for i in {1..60}; do
+            if curl -sf http://127.0.0.1:4000 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server failed to start, log follows:"
+          cat /tmp/http.log
+          exit 1
 
       - name: Run Playwright tests
         env:
