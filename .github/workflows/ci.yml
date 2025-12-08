@@ -34,6 +34,13 @@ jobs:
       - name: Build site
         run: bundle exec jekyll build
 
+      - name: Ensure python3 for static server
+        run: |
+          if ! command -v python3 >/dev/null; then
+            apt-get update
+            apt-get install -y python3
+          fi
+
       - name: Start static server
         run: |
           python3 -m http.server 4000 --bind 0.0.0.0 --directory _site > /tmp/http.log 2>&1 &
