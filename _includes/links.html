@@ -1,11 +1,13 @@
 <!-- <a target="_blank" href="{{ site.user.email.send }}"> Email</a> &nbsp;/&nbsp; -->
 
-{% if site.user.cv %}<a href="{{ site.user.cv }}">CV</a><span class="sep"> / </span>{% endif %}
-<a href="{{ site.user.scholar | prepend: 'https://scholar.google.com/citations?user=' }}">Google Scholar</a><span class="sep"> / </span>
-{% if site.user.publications %}<a href="{{ site.user.publications }}">Publications</a><span class="sep"> / </span>{% endif %}
-<a href="{{ site.user.github | prepend: 'https://github.com/' }}">GitHub</a><span class="sep"> / </span>
-<!-- <a href="{{ site.user.notebook }}">Notebook</a> <span class="sep"> / </span> -->
-<a href="{{ site.user.linkedin | prepend: 'https://www.linkedin.com/in/' }}">LinkedIn</a><span class="sep"> / </span>
-<a href="{{ site.user.amazon | prepend: 'https://www.amazon.com/stores/author/' }}">Amazon Books</a>
+<div class="primary-links">
+  {% if site.user.cv %}<a href="{{ site.user.cv }}">CV</a><span class="sep"> / </span>{% endif %}
+  <a href="{{ site.user.scholar | prepend: 'https://scholar.google.com/citations?user=' }}">Google Scholar</a><span class="sep"> / </span>
+  {% if site.user.publications %}<a href="{{ site.user.publications }}">Publications</a><span class="sep"> / </span>{% endif %}
+  <a href="{{ site.user.github | prepend: 'https://github.com/' }}">GitHub</a><span class="sep"> / </span>
+  <!-- <a href="{{ site.user.notebook }}">Notebook</a> <span class="sep"> / </span> -->
+  <a href="{{ site.user.linkedin | prepend: 'https://www.linkedin.com/in/' }}">LinkedIn</a><span class="sep"> / </span>
+  <a href="{{ site.user.amazon | prepend: 'https://www.amazon.com/stores/author/' }}">Amazon Books</a>
+</div>
 
 
