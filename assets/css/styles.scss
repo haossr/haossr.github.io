@@ -32,6 +32,11 @@
   .intro-photo { order: -1; width: 100% !important; max-width: none !important; }
   .intro-bio { order: 1; width: 100% !important; max-width: none !important; }
 
+  /* Improve mobile readability: left-align body copy while keeping header centered. */
+  .intro-bio { text-align: left !important; }
+  h1, name, email, .primary-links { text-align: center; }
+  #bio p { margin: 10px 0; }
+
   /* Footer links: keep typography consistent with body; only rely on color.
      Improve tap-ability via line-height + light padding (no pill/button styling). */
   .primary-links {
