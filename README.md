@@ -34,3 +34,16 @@ Playwright end-to-end tests cover the reading page behaviors (language switching
 You can run headed or UI mode with `npm run test:headed` or `npm run test:ui`.
 
 CI: GitHub Actions (`.github/workflows/ci.yml`) builds the site, serves `_site` on port 4000, installs Playwright browsers, and runs the Playwright suite on every push/PR.
+
+## Local development
+
+On macOS, the system Ruby can be too old for the repo's locked bundler and may cause gem install issues.
+
+Recommended setup:
+
+- Install Ruby 3.2: `brew install ruby@3.2`
+- Run the dev server: `bash scripts/dev.sh`
+
+Notes:
+- We set `LANG/LC_ALL` to UTF-8 in scripts to avoid intermittent Sass/SCSS encoding errors.
+- E2E tests can be run with: `npm run test:e2e` (auto-starts Jekyll).
