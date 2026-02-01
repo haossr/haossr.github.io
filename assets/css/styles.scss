@@ -16,12 +16,34 @@
   h2 { font-size: 20px; }
   h3 { font-size: 16px; }
   name { font-size: 32px; }
+
+  body { padding: 0 12px; }
+
   table { width: 100% !important; }
   table, tr, td { display: block; width: 100% !important; }
   td { padding: 12px !important; }
-}
 
-@media (max-width: 600px) { body { padding: 0 12px; } }
+  /* Put portrait above the bio on mobile (better scan + less side-by-side squeeze). */
+  .intro-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .intro-photo { order: -1; width: 100% !important; max-width: none !important; }
+  .intro-bio { order: 1; width: 100% !important; max-width: none !important; }
+
+  /* Make primary links easier to tap; remove separators. */
+  .sep { display: none; }
+  p a {
+    display: inline-block;
+    padding: 10px 12px;
+    margin: 6px 4px;
+    border: 1px solid rgba(7, 136, 155, 0.35);
+    border-radius: 999px;
+    line-height: 1;
+  }
+
+}
 
 /* Image defaults and lazy loading hints */
 img { max-width: 100%; height: auto; }
