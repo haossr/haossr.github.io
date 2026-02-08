@@ -54,7 +54,9 @@ disqus:
 
 comments:
   provider: disqus
-  disqus_shortname: haossr-github-io
+  # Set this to your real Disqus forum shortname from https://disqus.com/admin/settings/general/
+  # Example: https-ysymyth-github-io-blog
+  disqus_shortname: ""
 
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
 google_analytics: UA-180322865-1
