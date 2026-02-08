@@ -32,11 +32,12 @@ layout: null
     .essay-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
     .essay-title { margin: 0; font-size: 38px; line-height: 1.18; color: #111827; text-align: left; }
     .essay-meta { color: #6b7280; font-size: 14px; }
-    .essay-content h2, .essay-content h3 { display: block; margin: 30px 0 12px; color: #111827; }
+    .essay-content h2, .essay-content h3, .essay-content h4 { display: block; margin: 30px 0 12px; color: #111827; }
     .essay-content h2 { font-size: 28px; font-weight: 700; }
     .essay-content h3 { font-size: 22px; font-weight: 700; }
+    .essay-content h4 { font-size: 19px; font-weight: 700; }
     .essay-content p { margin: 0 0 18px; color: #1f2937; font-size: 20px; line-height: 1.82; letter-spacing: 0.005em; }
-    .essay-content ul { margin: 0 0 18px 24px; }
+    .essay-content ul, .essay-content ol { margin: 0 0 18px 24px; }
     .essay-content li { margin-bottom: 10px; color: #1f2937; font-size: 19px; line-height: 1.72; }
     .essay-content blockquote {
       margin: 14px 0 20px;
@@ -48,12 +49,49 @@ layout: null
       line-height: 1.7;
       font-style: italic;
     }
+    .inline-math {
+      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 1px 6px;
+      white-space: nowrap;
+    }
+    .appendix {
+      margin-top: 28px;
+      border: 1px solid #dbe4ff;
+      border-radius: 10px;
+      background: #f8faff;
+      padding: 10px 14px 14px;
+    }
+    .appendix > summary {
+      cursor: pointer;
+      color: #1e3a8a;
+      font-size: 18px;
+      font-weight: 700;
+      margin: 2px 0 8px;
+      list-style-position: outside;
+    }
+    .appendix .equation-line {
+      margin: 12px 0 18px;
+      padding: 10px 12px;
+      border-left: 3px solid #93c5fd;
+      background: #eff6ff;
+      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #0f172a;
+      overflow-x: auto;
+    }
     @media (max-width: 900px) {
       .essay-wrap { max-width: 860px; }
       .essay-title { font-size: 34px; }
       .essay-content p { font-size: 18px; line-height: 1.72; }
       .essay-content li { font-size: 17px; line-height: 1.65; }
       .essay-content blockquote { font-size: 17px; line-height: 1.62; }
+      .appendix > summary { font-size: 17px; }
+      .appendix .equation-line { font-size: 14px; }
     }
     @media (max-width: 600px) {
       .essay-card { padding: 20px; }
@@ -80,7 +118,7 @@ layout: null
       <p>This was March 2025. DAU looked great. The holdout set showed a 6%+ lift. In any normal product org, that’s champagne.</p>
       <p>And we had, in a sense, found what search / recommendation / ads people have always treated as the holy grail: a large user base; a plausible story for turning behavior into training signal; and a crew of MLEs who could stack endless small wins until the metrics moved.</p>
       <p>But it still wasn’t AGI. It was the old comfortable paradigm. The wins didn’t compound into a capability jump; the curve could flatten at any moment.</p>
-      <p>It felt like raising a digient in <a href="https://en.wikipedia.org/wiki/The_Lifecycle_of_Software_Objects"><em>The Lifecycle of Software Objects</em></a> — they keep getting better, but they don’t grow up.</p>
+      <p>It felt like raising a <a href="https://en.wikipedia.org/wiki/The_Lifecycle_of_Software_Objects"><em>digient in The Lifecycle of Software Objects</em></a> — they keep getting better, but they don’t grow up.</p>
       <p>That realization drained me. I started looking for a different kind of work.</p>
       <p>This post is what I found over the next 12 months — and the prediction it left me with.</p>
 
@@ -99,7 +137,8 @@ layout: null
 
       <h3>Data Point and Researcher</h3>
       <p>My mental model is blunt: if you have enough experimental datapoints, even an okay researcher will find the manifold.</p>
-      <p>With 10× more datapoints, an average PhD can look like Ilya. With 10^5× more datapoints, a strong agent can start to look like a serious researcher.</p>
+      <p>With 10× more datapoints, an average PhD can look like Ilya.</p>
+      <p>With 10^5× more datapoints, a strong agent can start to look like a serious researcher.</p>
       <p>Not because theory stops mattering, but because a lot of frontier work sits uncomfortably close to the empirical end of the spectrum: you learn by trying.</p>
       <p>And a “datapoint” here is not a single training example. It’s an end-to-end belief update produced by a long rollout of humans, GPUs, and org structure — from data center capacity to an experiment proposal, data plumbing, training runs, babysitting failures, and writing the Slack post.</p>
       <p>A clean ablation. A failure with a named failure mode and a concrete fix. A new eval slice that exposes a blind spot. An online signal you can trace back to a capability.</p>
@@ -115,6 +154,41 @@ layout: null
       <p>Infrastructure used to be like a lathe: rigid, purpose-built, expensive to change. Increasingly it wants to look like an iPhone: a general platform you keep reshaping — by adding apps — as your needs change. And the installation of apps is smoother and smoother.</p>
       <p>If 2025 was about shipping model updates, then 2026 is about making the loop run by itself.</p>
       <p>Some friends in GDM keep saying they’re doing “best‑of‑N.” I want to say: N now includes the agents.</p>
+
+      <details class="appendix">
+        <summary>Appendix: Draft Notes (Control-Loop Framing)</summary>
+
+        <h4>The flywheel is a control loop with gain</h4>
+        <p>Think of the lab as a closed loop:</p>
+        <div class="equation-line">M → A → (τ, q̄) → D<sub>eff</sub> → M</div>
+        <ul>
+          <li><span class="inline-math">M</span>: model capability (what the model can do)</li>
+          <li><span class="inline-math">A</span>: agent capability (how reliably it can execute multi-step work: implement, debug, run experiments, report)</li>
+          <li><span class="inline-math">τ</span>: cycle time (idea → experiment → result → attribution → next step)</li>
+          <li><span class="inline-math">q̄</span>: average signal quality (how clean/attributable/reproducible each datapoint is)</li>
+          <li><span class="inline-math">D<sub>eff</sub></span>: effective datapoints produced per time window</li>
+        </ul>
+
+        <h4>What the “gain” product is saying</h4>
+        <div class="equation-line">G ≡ (∂M/∂D<sub>eff</sub>) · (∂D<sub>eff</sub>/∂A) · (∂A/∂M)</div>
+        <p>This breaks the loop into three sensitivities:</p>
+        <ol>
+          <li><span class="inline-math">∂A/∂M</span> — <strong>When the model improves, how much does agent capability actually improve?</strong>
+            <p>If model gains don’t show up as better tool use, self-debugging, or multi-step reliability, this term stays small. The system gets smarter in evals but not much faster at doing research.</p>
+          </li>
+          <li><span class="inline-math">∂D<sub>eff</sub>/∂A</span> — <strong>When agents improve, how much does your effective datapoint factory improve?</strong>
+            <p>This is the “agents are inside the production line” term. If your infra org doesn’t adopt agents and still requires human bottlenecks everywhere, this term is muted.</p>
+          </li>
+          <li><span class="inline-math">∂M/∂D<sub>eff</sub></span> — <strong>When you produce more effective datapoints, how much does the next model improve?</strong>
+            <p>If datapoints are noisy, non-reproducible, or poorly attributed, scale buys little capability. In the short run (say, 2026), better datapoint quality/attribution probably matters as much as raw quantity.</p>
+          </li>
+        </ol>
+        <p>Multiply them and you get <span class="inline-math">G</span>, the loop’s ability to self-accelerate.</p>
+        <ul>
+          <li>Small <span class="inline-math">G</span> → incrementalism, flattening, treadmill vibes.</li>
+          <li>Large <span class="inline-math">G</span> → compounding: each turn of the loop makes the next turn faster/stronger.</li>
+        </ul>
+      </details>
 
     </article>
   </div>
