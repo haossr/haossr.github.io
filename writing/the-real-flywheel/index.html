@@ -21,7 +21,7 @@ layout: null
   <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
   <style>
     .essay-page { background: #f8f9fb; min-height: 100vh; padding: 40px 16px; }
-    .essay-wrap { max-width: 820px; margin: 0 auto; }
+    .essay-wrap { max-width: 980px; margin: 0 auto; }
     .essay-card {
       background: #fff;
       border: 1px solid #e5e7eb;
@@ -30,26 +30,37 @@ layout: null
       padding: 28px;
     }
     .essay-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
-    .essay-title { margin: 0; font-size: 30px; line-height: 1.2; color: #111827; text-align: left; }
+    .essay-title { margin: 0; font-size: 38px; line-height: 1.18; color: #111827; text-align: left; }
     .essay-meta { color: #6b7280; font-size: 14px; }
-    .essay-content h2, .essay-content h3 { display: block; margin: 26px 0 10px; color: #111827; }
-    .essay-content h2 { font-size: 24px; font-weight: 700; }
-    .essay-content h3 { font-size: 19px; font-weight: 700; }
-    .essay-content p { margin: 0 0 14px; color: #1f2937; }
-    .essay-content ul { margin: 0 0 14px 20px; }
-    .essay-content li { margin-bottom: 6px; color: #1f2937; }
+    .essay-content h2, .essay-content h3 { display: block; margin: 30px 0 12px; color: #111827; }
+    .essay-content h2 { font-size: 28px; font-weight: 700; }
+    .essay-content h3 { font-size: 22px; font-weight: 700; }
+    .essay-content p { margin: 0 0 18px; color: #1f2937; font-size: 20px; line-height: 1.82; letter-spacing: 0.005em; }
+    .essay-content ul { margin: 0 0 18px 24px; }
+    .essay-content li { margin-bottom: 10px; color: #1f2937; font-size: 19px; line-height: 1.72; }
     .essay-content blockquote {
-      margin: 12px 0 16px;
-      padding: 8px 14px;
+      margin: 14px 0 20px;
+      padding: 12px 16px;
       border-left: 3px solid #07889b;
       background: #f7fbfc;
       color: #0f172a;
+      font-size: 19px;
+      line-height: 1.7;
       font-style: italic;
+    }
+    @media (max-width: 900px) {
+      .essay-wrap { max-width: 860px; }
+      .essay-title { font-size: 34px; }
+      .essay-content p { font-size: 18px; line-height: 1.72; }
+      .essay-content li { font-size: 17px; line-height: 1.65; }
+      .essay-content blockquote { font-size: 17px; line-height: 1.62; }
     }
     @media (max-width: 600px) {
       .essay-card { padding: 20px; }
-      .essay-title { font-size: 26px; }
+      .essay-title { font-size: 28px; }
       .essay-top { flex-direction: column; align-items: flex-start; }
+      .essay-content p { font-size: 17px; line-height: 1.65; }
+      .essay-content li, .essay-content blockquote { font-size: 16px; line-height: 1.55; }
     }
   </style>
 </head>
@@ -69,7 +80,7 @@ layout: null
       <p>This was March 2025. DAU looked great. The holdout set showed a 6%+ lift. In any normal product org, that’s champagne.</p>
       <p>And we had, in a sense, found what search / recommendation / ads people have always treated as the holy grail: a large user base; a plausible story for turning behavior into training signal; and a crew of MLEs who could stack endless small wins until the metrics moved.</p>
       <p>But it still wasn’t AGI. It was the old comfortable paradigm. The wins didn’t compound into a capability jump; the curve could flatten at any moment.</p>
-      <p>It felt like raising a digient in <em>The Lifecycle of Software Objects</em> — they keep getting better, but they don’t grow up.</p>
+      <p>It felt like raising a digient in <a href="https://en.wikipedia.org/wiki/The_Lifecycle_of_Software_Objects"><em>The Lifecycle of Software Objects</em></a> — they keep getting better, but they don’t grow up.</p>
       <p>That realization drained me. I started looking for a different kind of work.</p>
       <p>This post is what I found over the next 12 months — and the prediction it left me with.</p>
 
