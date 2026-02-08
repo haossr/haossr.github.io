@@ -21,7 +21,7 @@ layout: null
   <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
   <style>
     .essay-page { background: #f8f9fb; min-height: 100vh; padding: 40px 16px; }
-    .essay-wrap { max-width: 820px; margin: 0 auto; }
+    .essay-wrap { max-width: 980px; margin: 0 auto; }
     .essay-card {
       background: #fff;
       border: 1px solid #e5e7eb;
@@ -30,39 +30,37 @@ layout: null
       padding: 28px;
     }
     .essay-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
-    .essay-title { margin: 0; font-size: 30px; line-height: 1.2; color: #111827; text-align: left; }
+    .essay-title { margin: 0; font-size: 38px; line-height: 1.18; color: #111827; text-align: left; }
     .essay-meta { color: #6b7280; font-size: 14px; }
-    .essay-content h2, .essay-content h3 { display: block; margin: 26px 0 10px; color: #111827; }
-    .essay-content h2 { font-size: 24px; font-weight: 700; }
-    .essay-content h3 { font-size: 19px; font-weight: 700; }
-    .essay-content p { margin: 0 0 14px; color: #1f2937; }
-    .essay-content ul { margin: 0 0 14px 20px; }
-    .essay-content li { margin-bottom: 6px; color: #1f2937; }
+    .essay-content h2, .essay-content h3 { display: block; margin: 30px 0 12px; color: #111827; }
+    .essay-content h2 { font-size: 28px; font-weight: 700; }
+    .essay-content h3 { font-size: 22px; font-weight: 700; }
+    .essay-content p { margin: 0 0 18px; color: #1f2937; font-size: 20px; line-height: 1.82; letter-spacing: 0.005em; }
+    .essay-content ul { margin: 0 0 18px 24px; }
+    .essay-content li { margin-bottom: 10px; color: #1f2937; font-size: 19px; line-height: 1.72; }
     .essay-content blockquote {
-      margin: 12px 0 16px;
-      padding: 8px 14px;
+      margin: 14px 0 20px;
+      padding: 12px 16px;
       border-left: 3px solid #07889b;
       background: #f7fbfc;
       color: #0f172a;
+      font-size: 19px;
+      line-height: 1.7;
       font-style: italic;
     }
-    .essay-content .formula {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      background: #f3f4f6;
-      border-radius: 8px;
-      padding: 10px 12px;
-      overflow-x: auto;
+    @media (max-width: 900px) {
+      .essay-wrap { max-width: 860px; }
+      .essay-title { font-size: 34px; }
+      .essay-content p { font-size: 18px; line-height: 1.72; }
+      .essay-content li { font-size: 17px; line-height: 1.65; }
+      .essay-content blockquote { font-size: 17px; line-height: 1.62; }
     }
-    .essay-content details {
-      border-top: 1px solid #e5e7eb;
-      margin-top: 24px;
-      padding-top: 16px;
-    }
-    .essay-content summary { cursor: pointer; color: #07889b; margin-bottom: 12px; }
     @media (max-width: 600px) {
       .essay-card { padding: 20px; }
-      .essay-title { font-size: 26px; }
+      .essay-title { font-size: 28px; }
       .essay-top { flex-direction: column; align-items: flex-start; }
+      .essay-content p { font-size: 17px; line-height: 1.65; }
+      .essay-content li, .essay-content blockquote { font-size: 16px; line-height: 1.55; }
     }
   </style>
 </head>
@@ -72,7 +70,7 @@ layout: null
     <article class="essay-card essay-content">
       <div class="essay-top">
         <a class="reading-back" href="/">&larr; Back home</a>
-        <div class="essay-meta">Feb 7, 2026 • Draft note</div>
+        <div class="essay-meta">Feb 7, 2026</div>
       </div>
 
       <h1 class="essay-title">The Real Flywheel</h1>
@@ -82,7 +80,7 @@ layout: null
       <p>This was March 2025. DAU looked great. The holdout set showed a 6%+ lift. In any normal product org, that’s champagne.</p>
       <p>And we had, in a sense, found what search / recommendation / ads people have always treated as the holy grail: a large user base; a plausible story for turning behavior into training signal; and a crew of MLEs who could stack endless small wins until the metrics moved.</p>
       <p>But it still wasn’t AGI. It was the old comfortable paradigm. The wins didn’t compound into a capability jump; the curve could flatten at any moment.</p>
-      <p>It felt like raising a digient in <em>The Lifecycle of Software Objects</em> — they keep getting better, but they don’t grow up.</p>
+      <p>It felt like raising a digient in <a href="https://en.wikipedia.org/wiki/The_Lifecycle_of_Software_Objects"><em>The Lifecycle of Software Objects</em></a> — they keep getting better, but they don’t grow up.</p>
       <p>That realization drained me. I started looking for a different kind of work.</p>
       <p>This post is what I found over the next 12 months — and the prediction it left me with.</p>
 
@@ -118,55 +116,6 @@ layout: null
       <p>If 2025 was about shipping model updates, then 2026 is about making the loop run by itself.</p>
       <p>Some friends in GDM keep saying they’re doing “best‑of‑N.” I want to say: N now includes the agents.</p>
 
-      <details>
-        <summary>Draft notes / appendix</summary>
-
-        <p><strong>Thesis:</strong> In frontier AI, the bottleneck is rarely how many ideas we can generate. The bottleneck is how fast we can turn an idea into a high‑signal datapoint — and do it repeatedly.</p>
-        <p>Iteration speed (even “dumb trial-and-error”) is a first-order competitive advantage. The labs that win can run more closed loops per unit time, with less org friction and higher signal quality.</p>
-
-        <h3>1) What counts as a datapoint?</h3>
-        <ul>
-          <li>Ablation results (what changed, how much, and with what confidence)</li>
-          <li>A failed run with a clear failure mode and corrective action</li>
-          <li>A new evaluation slice that reveals a blind spot</li>
-          <li>Online user feedback traceable to a capability</li>
-          <li>A safety/policy regression that is caught and localized</li>
-        </ul>
-
-        <h3>2) Effective datapoints = throughput × signal</h3>
-        <div class="formula">Let q_i ∈ [0, 1] be information quality of datapoint i.<br>
-          D_eff = Σ q_i ≈ N · q̄<br><br>
-          N = T / τ<br>
-          T = time window (e.g. one week)<br>
-          τ = cycle time from idea → experiment → result → attribution → next step
-        </div>
-        <p>Frontier advantage often comes from an order-of-magnitude reduction in τ, not a 10–20% improvement.</p>
-
-        <h3>3) Decomposition (where bottlenecks hide)</h3>
-        <div class="formula">D_eff ≈ GPU_throughput × Human_throughput × Automation_multiplier × Signal_quality × Org_friction^{-1}</div>
-        <ul>
-          <li><strong>GPU throughput:</strong> scheduling, queue time, utilization, failure waste</li>
-          <li><strong>Human throughput:</strong> implementation speed, glue-work burden, review latency</li>
-          <li><strong>Automation multiplier:</strong> agents + infra compress cycle time</li>
-          <li><strong>Signal quality:</strong> reproducible, attributable, comparable, auditable</li>
-          <li><strong>Org friction:</strong> permissions, alignment overhead, unclear ownership</li>
-        </ul>
-
-        <h3>4) Why more attempts matters</h3>
-        <p>If idea supply is not the bottleneck, then faster sampling of the idea manifold dominates. In long-tailed domains, increasing the number of attempts can materially improve the best observed outcome.</p>
-
-        <h3>5) The real flywheel: model capability ↔ infra automation</h3>
-        <ul>
-          <li>Better models → better agents</li>
-          <li>Better agents → more automation</li>
-          <li>More automation → shorter τ and higher q̄</li>
-          <li>Shorter τ + higher q̄ → more effective datapoints</li>
-          <li>More effective datapoints → faster discovery</li>
-          <li>Faster discovery → better models</li>
-        </ul>
-
-        <p><strong>Closing:</strong> The frontier is not only a competition of models — it’s a competition of feedback systems. GPUs are energy, researchers provide direction, and infra/agents convert energy into information.</p>
-      </details>
     </article>
   </div>
 </body>
