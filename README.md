@@ -50,10 +50,12 @@ Configuration lives in `_config.yml`:
 ```yml
 comments:
   provider: disqus
-  disqus_shortname: haossr-github-io
+  disqus_shortname: "<your-disqus-shortname>"
 ```
 
-If your Disqus shortname is different, update `comments.disqus_shortname`.
+Set `comments.disqus_shortname` to the exact Disqus **forum shortname** from
+`https://disqus.com/admin/settings/general/` (not your username or domain).
+
 You can disable comments per page with front matter: `comments: false`.
 
 ## Local development

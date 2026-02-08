@@ -1,4 +1,5 @@
 {% if page.comments != false %}
+{% assign disqus_shortname = site.comments.disqus_shortname | default: site.disqus.shortname | default: site.disqus_shortname %}
 <style>
   .writing-comments {
     margin-top: 34px;
@@ -38,14 +39,19 @@
 <section class="writing-comments" aria-label="Comments">
   <h3 class="writing-comments-title">Comments</h3>
   <p class="writing-comments-note">Thoughts, disagreements, and edge cases welcome.</p>
+
+  {% if disqus_shortname and disqus_shortname != '' %}
   <div id="disqus_thread" class="writing-comments-thread"></div>
   <noscript>Please enable JavaScript to view comments powered by Disqus.</noscript>
+  {% else %}
+  <p class="writing-comments-note">Comments are temporarily unavailable while Disqus is being configured.</p>
+  {% endif %}
 </section>
 
+{% if disqus_shortname and disqus_shortname != '' %}
 <script>
   (function () {
-    var shortname = '{{ site.comments.disqus_shortname | default: "haossr-github-io" }}';
-    if (!shortname) return;
+    var shortname = '{{ disqus_shortname }}';
 
     window.disqus_config = function () {
       this.page.url = '{{ page.url | absolute_url }}';
@@ -61,4 +67,5 @@
     (d.head || d.body).appendChild(s);
   })();
 </script>
+{% endif %}
 {% endif %}
