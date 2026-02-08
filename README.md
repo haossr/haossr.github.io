@@ -35,6 +35,27 @@ You can run headed or UI mode with `npm run test:headed` or `npm run test:ui`.
 
 CI: GitHub Actions (`.github/workflows/ci.yml`) builds the site, serves `_site` on port 4000, installs Playwright browsers, and runs the Playwright suite on every push/PR.
 
+## Writing comments (Disqus)
+
+`writing/the-real-flywheel/index.html` now includes a reusable comments block via:
+
+```liquid
+{% include writing-comments.html %}
+```
+
+To use comments on future writing pages, add the same include near the end of the article content.
+
+Configuration lives in `_config.yml`:
+
+```yml
+comments:
+  provider: disqus
+  disqus_shortname: haossr-github-io
+```
+
+If your Disqus shortname is different, update `comments.disqus_shortname`.
+You can disable comments per page with front matter: `comments: false`.
+
 ## Local development
 
 On macOS, the system Ruby can be too old for the repo's locked bundler and may cause gem install issues.

@@ -1,0 +1,64 @@
+{% if page.comments != false %}
+<style>
+  .writing-comments {
+    margin-top: 34px;
+    padding-top: 22px;
+    border-top: 1px solid #e5e7eb;
+  }
+  .writing-comments-title {
+    margin: 0 0 6px;
+    font-size: 26px;
+    line-height: 1.25;
+    color: #111827;
+  }
+  .writing-comments-note {
+    margin: 0 0 16px;
+    color: #6b7280;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .writing-comments-thread {
+    border-radius: 10px;
+    background: #fafafa;
+    padding: 2px 6px;
+  }
+  @media (max-width: 900px) {
+    .writing-comments-title { font-size: 24px; }
+  }
+  @media (max-width: 600px) {
+    .writing-comments {
+      margin-top: 28px;
+      padding-top: 18px;
+    }
+    .writing-comments-title { font-size: 22px; }
+    .writing-comments-note { font-size: 14px; }
+  }
+</style>
+
+<section class="writing-comments" aria-label="Comments">
+  <h3 class="writing-comments-title">Comments</h3>
+  <p class="writing-comments-note">Thoughts, disagreements, and edge cases welcome.</p>
+  <div id="disqus_thread" class="writing-comments-thread"></div>
+  <noscript>Please enable JavaScript to view comments powered by Disqus.</noscript>
+</section>
+
+<script>
+  (function () {
+    var shortname = '{{ site.comments.disqus_shortname | default: "haossr-github-io" }}';
+    if (!shortname) return;
+
+    window.disqus_config = function () {
+      this.page.url = '{{ page.url | absolute_url }}';
+      this.page.identifier = '{{ page.url }}';
+      this.page.title = '{{ page.title | default: "Writing" | escape }}';
+    };
+
+    var d = document;
+    var s = d.createElement('script');
+    s.src = 'https://' + shortname + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', Date.now().toString());
+    s.async = true;
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+{% endif %}
