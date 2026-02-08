@@ -50,13 +50,22 @@ Configuration lives in `_config.yml`:
 ```yml
 comments:
   provider: disqus
+  enabled: false
+  allowed_paths:
+    - /writing/the-real-flywheel/
   disqus_shortname: "<your-disqus-shortname>"
 ```
 
+Safety defaults are fail-closed:
+
+- `comments.enabled` must be `true`
+- the page must set front matter `comments: true`
+- the page URL must appear in `comments.allowed_paths`
+- `comments.disqus_shortname` must be a valid Disqus shortname
+
+If any check fails, the site does a graceful no-op (no Disqus runtime load).
 Set `comments.disqus_shortname` to the exact Disqus **forum shortname** from
 `https://disqus.com/admin/settings/general/` (not your username or domain).
-
-You can disable comments per page with front matter: `comments: false`.
 
 ## Local development
 
