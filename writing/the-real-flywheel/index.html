@@ -196,26 +196,26 @@ title: The Real Flywheel
 
         <h4>The flywheel is a control loop with gain</h4>
         <p>Think of the lab as a closed loop:</p>
-        <div class="equation-line">$$M 	o A 	o (	au, ar{q}) 	o D_{	ext{eff}} 	o M$$</div>
+        <div class="equation-line">$$M \to A \to (\tau, \bar{q}) \to D_{\mathrm{eff}} \to M$$</div>
         <ul>
           <li><span class="inline-math">\(M\)</span>: model capability (what the model can do)</li>
           <li><span class="inline-math">\(A\)</span>: agent capability (how reliably it can execute multi-step work: implement, debug, run experiments, report)</li>
-          <li><span class="inline-math">\(	au\)</span>: cycle time (idea → experiment → result → attribution → next step)</li>
-          <li><span class="inline-math">\(ar{q}\)</span>: average signal quality (how clean/attributable/reproducible each datapoint is)</li>
-          <li><span class="inline-math">\(D_{	ext{eff}}\)</span>: effective datapoints produced per time window</li>
+          <li><span class="inline-math">\(\tau\)</span>: cycle time (idea → experiment → result → attribution → next step)</li>
+          <li><span class="inline-math">\(\bar{q}\)</span>: average signal quality (how clean/attributable/reproducible each datapoint is)</li>
+          <li><span class="inline-math">\(D_{\mathrm{eff}}\)</span>: effective datapoints produced per time window</li>
         </ul>
 
         <h4>What the “gain” product is saying</h4>
-        <div class="equation-line">$$G \equiv rac{\partial M}{\partial D_{	ext{eff}}} \cdot rac{\partial D_{	ext{eff}}}{\partial A} \cdot rac{\partial A}{\partial M}$$</div>
+        <div class="equation-line">$$G \equiv \left(\frac{\partial M}{\partial D_{\mathrm{eff}}}\right) \cdot \left(\frac{\partial D_{\mathrm{eff}}}{\partial A}\right) \cdot \left(\frac{\partial A}{\partial M}\right)$$</div>
         <p>This breaks the loop into three sensitivities:</p>
         <ol>
-          <li><span class="inline-math">\(rac{\partial A}{\partial M}\)</span> — <strong>When the model improves, how much does agent capability actually improve?</strong>
+          <li><span class="inline-math">\(\frac{\partial A}{\partial M}\)</span> — <strong>When the model improves, how much does agent capability actually improve?</strong>
             <p>If model gains don’t show up as better tool use, self-debugging, or multi-step reliability, this term stays small. The shift from “chatty” models to reasoning models / coding agents is mostly an increase in this term.</p>
           </li>
-          <li><span class="inline-math">\(rac{\partial D_{	ext{eff}}}{\partial A}\)</span> — <strong>When agents improve, how much does your effective datapoint factory improve?</strong>
+          <li><span class="inline-math">\(\frac{\partial D_{\mathrm{eff}}}{\partial A}\)</span> — <strong>When agents improve, how much does your effective datapoint factory improve?</strong>
             <p>This is the “agents are inside the production line” term. If your infra org doesn’t adopt agents and still requires human ceremony for every run—manual setup, manual debugging, manual reporting—this term remains small. This is the main argument of this post.</p>
           </li>
-          <li><span class="inline-math">\(rac{\partial M}{\partial D_{	ext{eff}}}\)</span> — <strong>When you produce more effective datapoints, how much does the next model improve?</strong>
+          <li><span class="inline-math">\(\frac{\partial M}{\partial D_{\mathrm{eff}}}\)</span> — <strong>When you produce more effective datapoints, how much does the next model improve?</strong>
             <p>If datapoints are noisy, non-reproducible, or poorly attributed, scale buys little capability. In the short run (say, 2026), I don’t think agents materially move this term; it’s largely a function of researcher talent density, org structure, and leadership—i.e., how diverse ideas are generated and how evidence gets aggregated into decisions.</p>
           </li>
         </ol>
