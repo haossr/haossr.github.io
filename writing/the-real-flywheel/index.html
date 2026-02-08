@@ -46,19 +46,6 @@ layout: null
       color: #0f172a;
       font-style: italic;
     }
-    .essay-content .formula {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      background: #f3f4f6;
-      border-radius: 8px;
-      padding: 10px 12px;
-      overflow-x: auto;
-    }
-    .essay-content details {
-      border-top: 1px solid #e5e7eb;
-      margin-top: 24px;
-      padding-top: 16px;
-    }
-    .essay-content summary { cursor: pointer; color: #07889b; margin-bottom: 12px; }
     @media (max-width: 600px) {
       .essay-card { padding: 20px; }
       .essay-title { font-size: 26px; }
@@ -72,7 +59,7 @@ layout: null
     <article class="essay-card essay-content">
       <div class="essay-top">
         <a class="reading-back" href="/">&larr; Back home</a>
-        <div class="essay-meta">Feb 7, 2026 • Draft note</div>
+        <div class="essay-meta">Feb 7, 2026</div>
       </div>
 
       <h1 class="essay-title">The Real Flywheel</h1>
@@ -118,55 +105,6 @@ layout: null
       <p>If 2025 was about shipping model updates, then 2026 is about making the loop run by itself.</p>
       <p>Some friends in GDM keep saying they’re doing “best‑of‑N.” I want to say: N now includes the agents.</p>
 
-      <details>
-        <summary>Draft notes / appendix</summary>
-
-        <p><strong>Thesis:</strong> In frontier AI, the bottleneck is rarely how many ideas we can generate. The bottleneck is how fast we can turn an idea into a high‑signal datapoint — and do it repeatedly.</p>
-        <p>Iteration speed (even “dumb trial-and-error”) is a first-order competitive advantage. The labs that win can run more closed loops per unit time, with less org friction and higher signal quality.</p>
-
-        <h3>1) What counts as a datapoint?</h3>
-        <ul>
-          <li>Ablation results (what changed, how much, and with what confidence)</li>
-          <li>A failed run with a clear failure mode and corrective action</li>
-          <li>A new evaluation slice that reveals a blind spot</li>
-          <li>Online user feedback traceable to a capability</li>
-          <li>A safety/policy regression that is caught and localized</li>
-        </ul>
-
-        <h3>2) Effective datapoints = throughput × signal</h3>
-        <div class="formula">Let q_i ∈ [0, 1] be information quality of datapoint i.<br>
-          D_eff = Σ q_i ≈ N · q̄<br><br>
-          N = T / τ<br>
-          T = time window (e.g. one week)<br>
-          τ = cycle time from idea → experiment → result → attribution → next step
-        </div>
-        <p>Frontier advantage often comes from an order-of-magnitude reduction in τ, not a 10–20% improvement.</p>
-
-        <h3>3) Decomposition (where bottlenecks hide)</h3>
-        <div class="formula">D_eff ≈ GPU_throughput × Human_throughput × Automation_multiplier × Signal_quality × Org_friction^{-1}</div>
-        <ul>
-          <li><strong>GPU throughput:</strong> scheduling, queue time, utilization, failure waste</li>
-          <li><strong>Human throughput:</strong> implementation speed, glue-work burden, review latency</li>
-          <li><strong>Automation multiplier:</strong> agents + infra compress cycle time</li>
-          <li><strong>Signal quality:</strong> reproducible, attributable, comparable, auditable</li>
-          <li><strong>Org friction:</strong> permissions, alignment overhead, unclear ownership</li>
-        </ul>
-
-        <h3>4) Why more attempts matters</h3>
-        <p>If idea supply is not the bottleneck, then faster sampling of the idea manifold dominates. In long-tailed domains, increasing the number of attempts can materially improve the best observed outcome.</p>
-
-        <h3>5) The real flywheel: model capability ↔ infra automation</h3>
-        <ul>
-          <li>Better models → better agents</li>
-          <li>Better agents → more automation</li>
-          <li>More automation → shorter τ and higher q̄</li>
-          <li>Shorter τ + higher q̄ → more effective datapoints</li>
-          <li>More effective datapoints → faster discovery</li>
-          <li>Faster discovery → better models</li>
-        </ul>
-
-        <p><strong>Closing:</strong> The frontier is not only a competition of models — it’s a competition of feedback systems. GPUs are energy, researchers provide direction, and infra/agents convert energy into information.</p>
-      </details>
     </article>
   </div>
 </body>
