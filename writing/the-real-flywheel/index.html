@@ -19,6 +19,7 @@ layout: null
   <link rel="shortcut icon" href="{{ site.favicon }}" type="image/vnd.microsoft.icon">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <style>
     .essay-page { background: #f8f9fb; min-height: 100vh; padding: 40px 16px; }
     .essay-wrap { max-width: 980px; margin: 0 auto; }
@@ -61,39 +62,46 @@ layout: null
       font-style: italic;
     }
     .inline-math {
-      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.9em;
-      background: #f3f4f6;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      padding: 1px 6px;
+      font-family: inherit;
+      font-size: 1em;
+      color: #0f172a;
       white-space: nowrap;
     }
     .appendix {
-      margin-top: 28px;
-      border: 1px solid #dbe4ff;
-      border-radius: 10px;
-      background: #f8faff;
-      padding: 10px 14px 14px;
+      margin-top: 30px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
+      padding: 14px 18px 16px;
     }
     .appendix > summary {
       cursor: pointer;
       color: #1e3a8a;
       font-size: 18px;
       font-weight: 700;
-      margin: 2px 0 8px;
+      margin: 2px 0 10px;
       list-style-position: outside;
+    }
+    .appendix h4 {
+      margin-top: 20px;
+      margin-bottom: 8px;
     }
     .appendix .equation-line {
       margin: 12px 0 18px;
-      padding: 10px 12px;
-      border-left: 3px solid #93c5fd;
-      background: #eff6ff;
-      font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 16px;
-      line-height: 1.6;
-      color: #0f172a;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .appendix .equation-line .katex-display {
+      margin: 0.2em 0;
+    }
+    .appendix .katex {
+      font-size: 1.08em;
+      color: #0f172a;
+      text-rendering: optimizeLegibility;
     }
     @media (max-width: 900px) {
       .essay-wrap { max-width: 860px; }
@@ -102,7 +110,7 @@ layout: null
       .essay-content li { font-size: 17px; line-height: 1.65; }
       .essay-content blockquote { font-size: 17px; line-height: 1.62; }
       .appendix > summary { font-size: 17px; }
-      .appendix .equation-line { font-size: 14px; }
+      .appendix .katex { font-size: 1em; }
     }
     @media (max-width: 600px) {
       .essay-card { padding: 20px; }
@@ -110,6 +118,9 @@ layout: null
       .essay-top { flex-direction: column; align-items: flex-start; }
       .essay-content p { font-size: 17px; line-height: 1.65; }
       .essay-content li, .essay-content blockquote { font-size: 16px; line-height: 1.55; }
+      .appendix { padding: 12px 14px 14px; }
+      .appendix .equation-line { padding: 8px 10px; }
+      .appendix .katex { font-size: 0.95em; }
     }
   </style>
 </head>
@@ -171,38 +182,54 @@ layout: null
 
         <h4>The flywheel is a control loop with gain</h4>
         <p>Think of the lab as a closed loop:</p>
-        <div class="equation-line">M → A → (τ, q̄) → D<sub>eff</sub> → M</div>
+        <div class="equation-line">$$M \to A \to (\tau, \bar{q}) \to D_{\mathrm{eff}} \to M$$</div>
         <ul>
-          <li><span class="inline-math">M</span>: model capability (what the model can do)</li>
-          <li><span class="inline-math">A</span>: agent capability (how reliably it can execute multi-step work: implement, debug, run experiments, report)</li>
-          <li><span class="inline-math">τ</span>: cycle time (idea → experiment → result → attribution → next step)</li>
-          <li><span class="inline-math">q̄</span>: average signal quality (how clean/attributable/reproducible each datapoint is)</li>
-          <li><span class="inline-math">D<sub>eff</sub></span>: effective datapoints produced per time window</li>
+          <li><span class="inline-math">\(M\)</span>: model capability (what the model can do)</li>
+          <li><span class="inline-math">\(A\)</span>: agent capability (how reliably it can execute multi-step work: implement, debug, run experiments, report)</li>
+          <li><span class="inline-math">\(\tau\)</span>: cycle time (idea → experiment → result → attribution → next step)</li>
+          <li><span class="inline-math">\(\bar{q}\)</span>: average signal quality (how clean/attributable/reproducible each datapoint is)</li>
+          <li><span class="inline-math">\(D_{\mathrm{eff}}\)</span>: effective datapoints produced per time window</li>
         </ul>
 
         <h4>What the “gain” product is saying</h4>
-        <div class="equation-line">G ≡ (∂M/∂D<sub>eff</sub>) · (∂D<sub>eff</sub>/∂A) · (∂A/∂M)</div>
+        <div class="equation-line">$$G \equiv \left(\frac{\partial M}{\partial D_{\mathrm{eff}}}\right) \cdot \left(\frac{\partial D_{\mathrm{eff}}}{\partial A}\right) \cdot \left(\frac{\partial A}{\partial M}\right)$$</div>
         <p>This breaks the loop into three sensitivities:</p>
         <ol>
-          <li><span class="inline-math">∂A/∂M</span> — <strong>When the model improves, how much does agent capability actually improve?</strong>
+          <li><span class="inline-math">\(\partial A / \partial M\)</span> — <strong>When the model improves, how much does agent capability actually improve?</strong>
             <p>If model gains don’t show up as better tool use, self-debugging, or multi-step reliability, this term stays small. The system gets smarter in evals but not much faster at doing research.</p>
           </li>
-          <li><span class="inline-math">∂D<sub>eff</sub>/∂A</span> — <strong>When agents improve, how much does your effective datapoint factory improve?</strong>
+          <li><span class="inline-math">\(\partial D_{\mathrm{eff}} / \partial A\)</span> — <strong>When agents improve, how much does your effective datapoint factory improve?</strong>
             <p>This is the “agents are inside the production line” term. If your infra org doesn’t adopt agents and still requires human bottlenecks everywhere, this term is muted.</p>
           </li>
-          <li><span class="inline-math">∂M/∂D<sub>eff</sub></span> — <strong>When you produce more effective datapoints, how much does the next model improve?</strong>
+          <li><span class="inline-math">\(\partial M / \partial D_{\mathrm{eff}}\)</span> — <strong>When you produce more effective datapoints, how much does the next model improve?</strong>
             <p>If datapoints are noisy, non-reproducible, or poorly attributed, scale buys little capability. In the short run (say, 2026), better datapoint quality/attribution probably matters as much as raw quantity.</p>
           </li>
         </ol>
-        <p>Multiply them and you get <span class="inline-math">G</span>, the loop’s ability to self-accelerate.</p>
+        <p>Multiply them and you get <span class="inline-math">\(G\)</span>, the loop’s ability to self-accelerate.</p>
         <ul>
-          <li>Small <span class="inline-math">G</span> → incrementalism, flattening, treadmill vibes.</li>
-          <li>Large <span class="inline-math">G</span> → compounding: each turn of the loop makes the next turn faster/stronger.</li>
+          <li>Small <span class="inline-math">\(G\)</span> → incrementalism, flattening, treadmill vibes.</li>
+          <li>Large <span class="inline-math">\(G\)</span> → compounding: each turn of the loop makes the next turn faster/stronger.</li>
         </ul>
       </details>
 
     </article>
   </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var appendix = document.querySelector('.appendix');
+      if (!appendix || typeof renderMathInElement !== 'function') return;
+      renderMathInElement(appendix, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
 </body>
 
 </html>
