@@ -55,13 +55,13 @@ disqus:
 comments:
   provider: disqus
   # Global feature flag (fail-closed by default).
-  enabled: false
+  enabled: true
   # Explicit page allowlist (exact `page.url` values). Comments only render on these pages.
   allowed_paths:
     - /writing/the-real-flywheel/
   # Set this to your real Disqus forum shortname from https://disqus.com/admin/settings/general/
   # Example: https-ysymyth-github-io-blog
-  disqus_shortname: ""
+  disqus_shortname: "hao-notebook"
 
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
 google_analytics: UA-180322865-1
