@@ -1,5 +1,13 @@
-{% if page.comments != false %}
-{% assign disqus_shortname = site.comments.disqus_shortname | default: site.disqus.shortname | default: site.disqus_shortname %}
+{% assign comments_provider = site.comments.provider | default: '' | downcase %}
+{% assign comments_enabled = site.comments.enabled | default: false %}
+{% assign comments_allowed_paths = site.comments.allowed_paths | default: empty %}
+{% assign disqus_shortname = site.comments.disqus_shortname | default: site.disqus.shortname | default: site.disqus_shortname | to_s | strip %}
+{% assign page_url = page.url | to_s %}
+{% assign page_comments_opt_in = page.comments == true %}
+{% assign page_in_allowlist = comments_allowed_paths contains page_url %}
+{% assign should_render_comments = comments_enabled and page_comments_opt_in and page_in_allowlist and comments_provider == 'disqus' %}
+
+{% if should_render_comments %}
 <style>
   .writing-comments {
     margin-top: 34px;
@@ -40,18 +48,23 @@
   <h3 class="writing-comments-title">Comments</h3>
   <p class="writing-comments-note">Thoughts, disagreements, and edge cases welcome.</p>
 
-  {% if disqus_shortname and disqus_shortname != '' %}
-  <div id="disqus_thread" class="writing-comments-thread"></div>
+  <p id="comments-unavailable" class="writing-comments-note">Comments are temporarily unavailable.</p>
+  <div id="disqus_thread" class="writing-comments-thread" hidden></div>
   <noscript>Please enable JavaScript to view comments powered by Disqus.</noscript>
-  {% else %}
-  <p class="writing-comments-note">Comments are temporarily unavailable while Disqus is being configured.</p>
-  {% endif %}
 </section>
 
-{% if disqus_shortname and disqus_shortname != '' %}
 <script>
   (function () {
-    var shortname = '{{ disqus_shortname }}';
+    var shortname = '{{ disqus_shortname | escape }}';
+    var validShortnamePattern = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i;
+    if (!validShortnamePattern.test(shortname)) return;
+
+    var unavailable = document.getElementById('comments-unavailable');
+    var thread = document.getElementById('disqus_thread');
+    if (!thread) return;
+
+    thread.hidden = false;
+    if (unavailable) unavailable.hidden = true;
 
     window.disqus_config = function () {
       this.page.url = '{{ page.url | absolute_url }}';
@@ -64,8 +77,11 @@
     s.src = 'https://' + shortname + '.disqus.com/embed.js';
     s.setAttribute('data-timestamp', Date.now().toString());
     s.async = true;
+    s.onerror = function () {
+      thread.hidden = true;
+      if (unavailable) unavailable.hidden = false;
+    };
     (d.head || d.body).appendChild(s);
   })();
 </script>
-{% endif %}
 {% endif %}
