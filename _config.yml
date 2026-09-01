@@ -123,3 +123,8 @@ exclude:
   - _temp/index.html
   - _temp/
   - vendor/
+  # Keep the Human Attention essay in source control without publishing it yet.
+  - writing/data-structures-for-the-agentic-age/
+  - assets/css/data-structures-essay.css
+  - assets/image/calendar-thread-filesystem-attention-en.png
+  - assets/image/calendar-thread-filesystem-attention-zh.png
